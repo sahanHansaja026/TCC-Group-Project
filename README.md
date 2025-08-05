@@ -8,11 +8,14 @@ cd backend
 ```
 
 ````
-npm install
+python -m venv .venv
 ````
 
 ```
-npm start
+.venv\Scripts\Activate.ps1
+```
+```
+ pip install -r requirements.txt
 ```
 ## to mobile
 
