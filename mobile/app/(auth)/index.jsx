@@ -16,21 +16,21 @@ export default function Login() {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post('#####', {
+      const response = await axios.post('http://192.168.1.4:8000/user/login', {
         email,
         password,
       });
 
       await AsyncStorage.setItem('token', response.data.token);
 
-      router.push('/(tab)'); // Navigate to another page
+      router.push('/(tabs)'); // Navigate to another page
     } catch (error) {
       console.error('Login failed', error);
       if (error.response) {
         alert(`Login failed: ${error.response.data.error}`);
       } else {
         alert('Login failed: Network error or server not reachable');
-        router.push('/(tab)')
+        router.push('/(tabs)')
       }
     }
   };
@@ -63,7 +63,7 @@ export default function Login() {
           />
           <View style={styles.centeraliment}>
             <TouchableOpacity style={styles.submitbtn} onPress={handleSubmit}>
-              <Text style={styles.btntext}>Submit</Text>
+              <Text style={styles.btntext}>Login</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.centeraliment}>

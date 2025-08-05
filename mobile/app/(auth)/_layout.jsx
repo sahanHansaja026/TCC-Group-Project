@@ -5,7 +5,7 @@ export default function AuthLayout() {
   return (
     <SafeAreaProvider>
       <Stack screenOptions={{ headerShown: false }} />
-      <Stack.Screen name="(tab)" />
+      <Stack.Screen name="/(tabs)" />
     </SafeAreaProvider>
   );
 }
