@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException # type: ignore
-from sqlalchemy.orm import Session # type: ignore
-from auth import hash_password, veryfy_password
+from fastapi import APIRouter, Depends, HTTPException  # type: ignore
+from sqlalchemy.orm import Session  # type: ignore
+from core.auth import hash_password, veryfy_password
 import models, schemas
 from database import get_db
 
 router = APIRouter()
+
 
 @router.post("/register/")
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -14,12 +15,13 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     new_user = models.User(
         email=user.email,
         username=user.username,
-        hashed_password=hash_password(user.password)
+        hashed_password=hash_password(user.password),
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return {"message": "User registered successfully"}
+
 
 @router.post("/login/")
 def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
@@ -32,5 +34,5 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
         "message": "Login successful",
         "token": "dummy_token_123",  # Replace with JWT token
         "username": db_user.username,
-        "email": db_user.email
+        "email": db_user.email,
     }
