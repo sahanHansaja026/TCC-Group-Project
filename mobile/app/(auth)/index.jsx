@@ -3,6 +3,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import React from 'react';
 import { Link, router } from 'expo-router';
 import axios from 'axios';
+import API_BASE_URL  from '../../config/ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FrontVector from '../../assets/images/login-front-vector.svg';
 import RearVector from '../../assets/images/login-rear-vector.svg';
@@ -16,7 +17,7 @@ export default function Login() {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post('http://192.168.1.4:8000/user/login', {
+      const response = await axios.post(`${API_BASE_URL}/user/login`, {
         email,
         password,
       });

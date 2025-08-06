@@ -1,0 +1,10 @@
+    <View style={{ padding: 20 }}>
+      {user ? (
+        <>
+          <Text >Name: {user.username}</Text>
+          <Text >Email: {user.email}</Text>
+        </>
+      ) : (
+        <Text style={{ marginTop: 10 }}>Loading user data...</Text>
+      )}
+    </View>
