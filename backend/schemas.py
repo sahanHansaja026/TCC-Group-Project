@@ -1,4 +1,5 @@
 from pydantic import BaseModel # type: ignore
+from typing import Optional
 
 class UserCreate(BaseModel):
     username:str
@@ -8,4 +9,17 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email:str
     password:str
-    
+
+class ProfileBase(BaseModel):
+    name: str
+    email: str
+    contact: Optional[str] = None
+    Profileimage: Optional[bytes] = None
+
+class ProfileCreate(ProfileBase):
+    pass
+
+class ProfileResponse(ProfileBase):
+    id: int
+    class Config:
+        orm_mode = True

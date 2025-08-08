@@ -4,6 +4,7 @@ import authService from "../services/authService";
 import React, { useEffect, useState } from "react";
 import HomeTopSvgImage from "../../assets/images/home-top.svg";
 
+
 export default function Home() {
   const [user, setUser] = useState(null);
 
