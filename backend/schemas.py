@@ -19,7 +19,12 @@ class ProfileBase(BaseModel):
 class ProfileCreate(ProfileBase):
     pass
 
-class ProfileResponse(ProfileBase):
+class ProfileResponse(BaseModel):
     id: int
+    name: str
+    email: str
+    contact: Optional[str] = None
+    profileimage: Optional[str] = None  # base64 string
+
     class Config:
         orm_mode = True

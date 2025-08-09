@@ -1,6 +1,8 @@
 import { SafeAreaView, StyleSheet, View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import React, { useEffect, useState } from "react";
+import axios from 'axios';
+import API_BASE_URL from '../../config/ipconfig';
 import { useRouter } from "expo-router";
 import authService from "../services/authService";
 import FrontVector from '../../assets/images/login-front-vector.svg';
@@ -9,6 +11,7 @@ import GestImage from "../../assets/images/ui-profile-icon-vector.jpg";
 
 export default function Settings() {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const router = useRouter(); 
 
   useEffect(() => {
@@ -25,6 +28,24 @@ export default function Settings() {
     fetchUserData();
   }, []);
 
+  // Fetch profile from backend once user email is available
+  useEffect(() => {
+    if (!user?.email) return;
+
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/profile/email`, {
+          params: { email: user.email },
+        });
+        setProfile(response.data);
+      } catch (error) {
+        console.error('Failed to fetch profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, [user]);
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -38,9 +59,16 @@ export default function Settings() {
               activeOpacity={0.7}
               onPress={() => router.push("/(components)")} // <-- Navigate here
             >
-              <Image source={GestImage} style={styles.profileimage} />
+              <Image
+                source={
+                  profile?.profileimage
+                    ? { uri: `data:image/jpeg;base64,${profile.profileimage}` }
+                    : GestImage
+                }
+                style={styles.profileimage}
+              />
               <View style={styles.profilecontent}>
-                <Text>{user?.email ?? 'Guest'}</Text>
+                <Text>{profile?.email ?? 'Guest'}</Text>
                 <Text>Edit Your Personal Details</Text>
               </View>
               <ArrowIcon style={styles.image} />

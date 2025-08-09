@@ -18,5 +18,5 @@ class Profile(Base):
     name = Column(String)
     email=Column(String)
     contact=Column(String)
-    Profileimage = Column(LargeBinary) 
+    profileimage = Column(LargeBinary) 
     
