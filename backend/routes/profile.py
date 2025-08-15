@@ -43,18 +43,25 @@ async def create_profile(
 @router.get("/profile/email", response_model=schemas.ProfileResponse)
 def get_profile_by_email(email: str, db: Session = Depends(get_db)):
     profile = db.query(models.Profile).filter(models.Profile.email == email).first()
-    if not profile:
-        raise HTTPException(status_code=404, detail="Profile not found")
     
-    # Convert binary profileimage to base64 string if exists
-    profile_image_base64 = None
-    if profile.profileimage:
-        profile_image_base64 = base64.b64encode(profile.profileimage).decode('utf-8')
+    if profile:
+        profile_image_base64 = (
+            base64.b64encode(profile.profileimage).decode('utf-8')
+            if profile.profileimage else None
+        )
+        return {
+            "id": profile.id,
+            "name": profile.name,
+            "email": profile.email,
+            "contact": profile.contact,
+            "profileimage": profile_image_base64,
+        }
 
+    # Return default empty profile if not found
     return {
-        "id": profile.id,
-        "name": profile.name,
-        "email": profile.email,
-        "contact": profile.contact,
-        "profileimage": profile_image_base64,
+        "id": 0,
+        "name": "",
+        "email": email,
+        "contact": "",
+        "profileimage": None,
     }

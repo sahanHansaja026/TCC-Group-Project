@@ -1,4 +1,4 @@
-from pydantic import BaseModel # type: ignore
+from pydantic import BaseModel, EmailStr, constr # type: ignore
 from typing import Optional
 
 class UserCreate(BaseModel):
@@ -25,6 +25,21 @@ class ProfileResponse(BaseModel):
     email: str
     contact: Optional[str] = None
     profileimage: Optional[str] = None  # base64 string
+
+    class Config:
+        orm_mode = True
+
+class PaymentBase(BaseModel):
+    email: str
+    cardnumber: str 
+    cvv: str
+    exprire: str
+
+class PaymentCreate(PaymentBase):
+    pass
+
+class PaymentResponse(PaymentBase):
+    id: int
 
     class Config:
         orm_mode = True

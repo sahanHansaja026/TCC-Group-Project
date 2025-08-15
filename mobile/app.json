@@ -12,6 +12,12 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.sahanhansaja.mobile",
+      "config": {
+        "googleMaps": {
+          "apiKey": "73:0A:43:40:16:FF:F7:4B:D2:E0:E7:14:EC:20:91:15:2D:0C:99:74"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -33,10 +39,17 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-maps"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e3c9946e-2e6d-4c4b-86d0-ffb7ff2971ad"
+      }
     }
   }
 }

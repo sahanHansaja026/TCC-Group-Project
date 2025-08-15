@@ -19,4 +19,12 @@ class Profile(Base):
     email=Column(String)
     contact=Column(String)
     profileimage = Column(LargeBinary) 
+
+class Payment(Base):
+    __tablename__= "card_details"
     
+    id =  id = Column(Integer,primary_key=True, index=True)  
+    email=Column(String)
+    cardnumber = Column(String,unique=True,index=True)
+    cvv=Column(String)
+    exprire=Column(String)
