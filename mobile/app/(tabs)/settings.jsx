@@ -1,5 +1,6 @@
 import { SafeAreaView, StyleSheet, View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import API_BASE_URL from '../../config/ipconfig';
@@ -13,6 +14,8 @@ export default function Settings() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const router = useRouter(); 
+  const isFocused = useIsFocused();
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -40,11 +43,16 @@ export default function Settings() {
         setProfile(response.data);
       } catch (error) {
         console.error('Failed to fetch profile:', error);
+        setProfile(null);
+      }
+      finally {
+        setLoadingProfile(false);
       }
     };
 
     fetchProfile();
-  }, [user]);
+  }, [user, isFocused]); // <-- refresh whenever screen is focused
+
 
   return (
     <SafeAreaProvider>
@@ -59,16 +67,20 @@ export default function Settings() {
               activeOpacity={0.7}
               onPress={() => router.push("/(components)")} // <-- Navigate here
             >
-              <Image
-                source={
-                  profile?.profileimage
-                    ? { uri: `data:image/jpeg;base64,${profile.profileimage}` }
-                    : GestImage
-                }
-                style={styles.profileimage}
-              />
+              {loadingProfile ? (
+                <Text>Loading...</Text>
+              ) : (
+                <Image
+                  source={
+                    profile?.profileimage
+                      ? { uri: `data:image/jpeg;base64,${profile.profileimage}` }
+                      : GestImage
+                  }
+                  style={styles.profileimage}
+                />
+              )}
               <View style={styles.profilecontent}>
-                <Text>{profile?.email ?? 'Guest'}</Text>
+                <Text>{user?.email ?? 'Guest'}</Text>
                 <Text>Edit Your Personal Details</Text>
               </View>
               <ArrowIcon style={styles.image} />
@@ -150,7 +162,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFC35',
     width: 350,
     height: 60,
-    borderWidth: 2,
+    borderWidth: 0,
     borderRadius: 18,
     borderColor: '#000',
     justifyContent:'center',

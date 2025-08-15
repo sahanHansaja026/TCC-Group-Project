@@ -38,3 +38,4 @@ npm install
 ```
 npx expo
 ```
+hi
