@@ -6,7 +6,8 @@ export default function Componentlayout() {
         <SafeAreaProvider>
             <Stack screenOptions={{ headerShown: true }}>
                 <Stack.Screen name="index" options={{ title: "Profile Edit" }} />
-                <Stack.Screen name="billing" options={{ title:"Billing Information"}}/>
+                <Stack.Screen name="billing" options={{ title: "Billing Information" }} />
+                <Stack.Screen name="aboutus" options={{title:'About Us'}} />
             </Stack>
         </SafeAreaProvider>
     );
