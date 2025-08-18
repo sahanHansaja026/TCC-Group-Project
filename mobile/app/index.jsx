@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { SafeAreaView, StyleSheet, Text } from "react-native";
+import { SafeAreaView, StyleSheet, Image, View, Text } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import MyLogo from '../assets/images/mylogo.svg';
+import MyLogo from '../assets/images/logoimage.png'
 
 export default function Index() {
   const router = useRouter();
@@ -17,22 +17,44 @@ export default function Index() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <MyLogo style={styles.image} />
+      <SafeAreaView style={styles.maincontainer}>
+        <View style={styles.container}>
+          <Image source={MyLogo} style={styles.image} />
+          <Text style={styles.title}>EasyPark</Text>
+          <View style={styles.finaltitle}>
+            <Text style={styles.bottomtext}> Welcome !</Text>
+          </View>
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  maincontainer: {
+    flex: 1,
+    backgroundColor: "#FFFD78",
+  },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "flex-end", // center vertically
-    alignItems: "center",     
+    justifyContent: "center", // center vertically
+    alignItems: "center",
   },
   image: {
-    width: 200,
-    height: 70,
+    width: 300,
+    height: 350,
+  },
+  title: {
+    fontSize: 45,
+    fontWeight: 'bold',
+    marginTop: -20,
+  },
+  finaltitle: {
+    marginTop: 180,
+    alignItems: 'center',
+  },
+  bottomtext: {
+    fontSize: 40,
+    marginTop: 85,
   }
 });

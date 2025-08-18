@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 from database import get_db
 import models, schemas
 
@@ -25,3 +26,13 @@ def save_card(card: schemas.PaymentCreate, db: Session = Depends(get_db)):
     db.refresh(new_card)
 
     return new_card
+
+
+@router.get("/get_card/{email}", response_model=List[schemas.PaymentResponse])
+def get_card(email: str, db: Session = Depends(get_db)):
+    # Fetch all cards by email
+    cards = db.query(models.Payment).filter(models.Payment.email == email).all()
+    if not cards:
+        raise HTTPException(status_code=404, detail="No cards found for this user")
+   
+    return cards
