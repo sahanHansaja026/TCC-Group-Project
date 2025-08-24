@@ -40,7 +40,9 @@
     "react-dom": "19.0.0",
     "react-native": "0.79.5",
     "react-native-credit-card-input": "^1.0.0",
+    "react-native-dropdown-picker": "^5.4.6",
     "react-native-gesture-handler": "~2.24.0",
+    "react-native-maps": "1.20.1",
     "react-native-payment-card-icons": "^1.0.3",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
@@ -48,7 +50,8 @@
     "react-native-svg": "15.11.2",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
-    "rn-credit-card": "^1.0.4"
+    "rn-credit-card": "^0.1.1",
+    "typescript": "~5.8.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

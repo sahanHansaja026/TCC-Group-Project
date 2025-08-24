@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from database import engine
 import models
 
-from routes import user,profile,payment
+from routes import user,profile,payment,vehicals
 
 logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
 origins = ["http://localhost:3000", "http://192.168.1.4:19006"]
@@ -27,4 +27,5 @@ app.add_middleware(
 app.include_router(user.router, prefix="/user", tags=["User"])
 app.include_router(profile.router)
 app.include_router(payment.router)
+app.include_router(vehicals.router)
 
