@@ -1,28 +1,29 @@
-import { View, Text, SafeAreaView, StyleSheet, TextInput } from 'react-native'
-import React from 'react'
+import { SafeAreaView, StyleSheet, View, Text, ScrollView, Image } from 'react-native'
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import FrontVector from "../../assets/images/your-vector.svg"
+import React from 'react';
+import TopVector from "../../assets/images/about-page-top-vector.svg";
+import HowItWork from "../../assets/images/about-middle-yellow.svg";
+import RoadMap from "../../assets/images/road map.png";
 
-export default function Aboutus() {
-  const { email, onChangeEmail } = React.useState("");
+export default function AboutPage() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <View>
-          <FrontVector style={styles.image} />
-        </View>
-        <View style={styles.itmes}>
-          <Text style={styles.title}>Welcome to my page</Text>
-        </View>
-        <View style={styles.left}></View>
-        <TextInput
-          style={styles.input}
-          onChangeText={onChangeEmail}
-          placeholder="Email"
-          value={email}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.topcontainer}>
+            <TopVector style={styles.image1} />
+          </View>
+          <View style={styles.discriptionbox}>
+            <Text style={styles.title}>Description</Text>
+            <Text style={styles.normalwords}>
+              This AI-powered Car Parking System features a clean, user-friendly interface designed to simplify parking management. It displays real-time slot availability, supports smart reservations, and provides visual feedback for vehicle entry and exit using AI detection. The layout includes an interactive parking map, intuitive icons, and a responsive design optimized for both light and dark modes, ensuring a smooth and modern user experience.
+            </Text>
+          </View>
+          <View style={styles.topcontainer}>
+            <HowItWork style={styles.image1} />
+            <Image source={RoadMap} style={styles.image3} />
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -30,32 +31,50 @@ export default function Aboutus() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
+  image1: {
+    width: '100%',
+    height: '100%',
   },
-  left: {
-    backgroundColor: '#FFFC35',
-    width: 50,
-    height: 50,
-    borderWidth: 2,
-    borderColor: '#0EFF43',
-    borderRadius: '50%',
+  image2: {
+    width: '100%',
+    height: '100%',
+    marginTop: -150,
   },
-  itmes: {
+  topcontainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  image: {
-    width: 80,
+  discriptionbox: {
+    paddingLeft: 10,
+    paddingRight: 10,
+    marginBottom: 25,
   },
-  input: {
-    height: 60,
-    marginVertical: 10,
-    borderColor: '#000',
-    borderWidth: 2,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    fontSize: 20,
+  title: {
+    fontSize: 25,
+    color: '#000',
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
+  normalwords: {
+    fontSize: 18,
+    color: '#555555',
+    fontWeight: 'bold',
+    marginBottom: -150,
+  },
+  middlecontainer: {
+    width: '100%',
+    height: '100%', 
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  image3: {
+    position: 'absolute',
+    width: 380,
+    height:350,
+
+  }
 })
