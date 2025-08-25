@@ -43,3 +43,19 @@ class PaymentResponse(PaymentBase):
 
     class Config:
         orm_mode = True
+
+class VechicalBase(BaseModel):
+    email: str
+    licenseplate: str 
+    make: str
+    model: str
+    color: str
+    
+class VechicalResponse(VechicalBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+class VechicalCreate(VechicalBase):
+    pass

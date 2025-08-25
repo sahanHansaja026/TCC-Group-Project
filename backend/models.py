@@ -28,3 +28,13 @@ class Payment(Base):
     cardnumber = Column(String,unique=True,index=True)
     cvv=Column(String)
     exprire=Column(String)
+    
+class Vechical(Base):
+    __tablename__ ="vechical"
+    
+    id =  id = Column(Integer,primary_key=True, index=True)  
+    email=Column(String)
+    licenseplate = Column(String,unique=True,index=True)
+    make=Column(String)
+    model=Column(String)
+    color=Column(String)
