@@ -34,7 +34,7 @@ class Vechical(Base):
     
     id =  id = Column(Integer,primary_key=True, index=True)  
     email=Column(String)
-    licenseplate = Column(String)
+    licenseplate = Column(String,unique=True,index=True)
     make=Column(String)
     model=Column(String)
     color=Column(String)
