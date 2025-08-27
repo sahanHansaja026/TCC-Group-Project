@@ -64,4 +64,5 @@ def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depends(get
     return {
         "username": db_user.username,
         "email": db_user.email,
+        "id": db_user.id,
     }
