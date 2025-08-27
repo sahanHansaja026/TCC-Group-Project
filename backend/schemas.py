@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr, constr # type: ignore
 from typing import Optional
+from datetime import date, time
+
 
 class UserCreate(BaseModel):
     username:str
@@ -59,3 +61,35 @@ class VechicalResponse(VechicalBase):
 
 class VechicalCreate(VechicalBase):
     pass
+
+class SlotBase(BaseModel):
+    slotnumber: str
+    status: str 
+    parkinglotid: int
+
+class SlotResponse(SlotBase):
+    slotid: int  # must match your model column name
+
+    class Config:
+        orm_mode = True
+
+class SlotCreate(SlotBase):
+    pass
+
+class BookingBase(BaseModel):
+    date: date
+    StartTime: time
+    EndTime: time
+    status: str
+    DriverID: int
+    VechicalID: int
+    slotid: int
+
+class BookingCreate(BookingBase):
+    pass
+
+class BookingResponse(BookingBase):
+    BookingID: int
+
+    class Config:
+        orm_mode = True

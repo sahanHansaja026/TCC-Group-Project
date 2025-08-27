@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from database import engine
 import models
 
-from routes import user,profile,payment,vehicals
+from routes import user,profile,payment,vehicals,slot,booking
 
 logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
 origins = ["http://localhost:3000", "http://192.168.1.4:19006"]
@@ -16,7 +16,7 @@ app = FastAPI()
 # CORS settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Adjust as needed
+    allow_origins=origins,  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -28,4 +28,6 @@ app.include_router(user.router, prefix="/user", tags=["User"])
 app.include_router(profile.router)
 app.include_router(payment.router)
 app.include_router(vehicals.router)
+app.include_router(slot.router)
+app.include_router(booking.router)
 
