@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity, Image } from 'react-native'
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import React from 'react';
 import { Link, router } from 'expo-router';
@@ -7,28 +7,28 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import authService from '../services/authService';
 import FrontVector from '../../assets/images/login-front-vector.svg';
 import RearVector from '../../assets/images/login-rear-vector.svg';
-import GoogleIcon from '../../assets/images/google-icon.svg';
-import XIcon from '../../assets/images/x-icon.svg';
-import FacebookIcon from '../../assets/images/facebook-icon.svg';
+import GoogleIcon from '../../assets/images/google.png';
+import XIcon from '../../assets/images/xicon.png';
+import FacebookIcon from '../../assets/images/facebook.png';
 
 export default function Signup() {
-    const [email, onChangeEmail] = React.useState('');
+  const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
   const [username, onChangeUsername] = React.useState('');
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log({ username, email, password }); 
+      console.log({ username, email, password });
       await authService.register({ username, email, password });
       router.push('/(auth)');
     } catch (error) {
       console.error("Registration failed", error.response?.data || error.message);
     }
-  }; 
+  };
 
   return (
-<SafeAreaProvider>
+    <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <FrontVector style={styles.image} />
         <View style={styles.header}>
@@ -71,12 +71,12 @@ export default function Signup() {
             <Text style={styles.options}>or sign in with</Text>
           </View>
           <View style={styles.iconview}>
-            <XIcon style={styles.icon} />
-            <GoogleIcon style={styles.icon} />
-            <FacebookIcon style={styles.icon} />
+            <Image source={XIcon} style={styles.icon} />
+            <Image source={FacebookIcon} style={styles.icon} />
+            <Image source={GoogleIcon} style={styles.icon} />
           </View>
           <View style={styles.navigation}>
-            <Link href="/signup">
+            <Link href="/(auth)">
               <Text style={styles.linktext}>Have an account? Log In</Text>
             </Link>
           </View>
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
     height: 80,
   },
   icon: {
-    width: 180,
-    height: 180,
+    width: 57,
+    height: 60,
   },
   scrollView: {
     padding: 20,

@@ -12,11 +12,14 @@ export default function Booking() {
     const [vehicleID, setVechicleID] = useState(null);
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedCard, setSelectedCard] = useState(null);
+
 
     const [slotOpen, setSlotOpen] = useState(false);
     const [slotID, setSlotID] = useState(null);
     const [slotItems, setSlotItems] = useState([]);
     const [slotLoading, setSlotLoading] = useState(true);
+    const [savedCards, setSavedCards] = useState([]); // plural for multiple cards
 
     const [user, setUser] = useState(null);
 
@@ -28,6 +31,7 @@ export default function Booking() {
     const [activePicker, setActivePicker] = useState(null);
 
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [cardData, setCardData] = useState({});
 
     const [currentStep, setCurrentStep] = useState(1);
 
@@ -55,6 +59,22 @@ export default function Booking() {
         };
         fetchCars();
     }, []);
+
+    useEffect(() => {
+        const loadCards = async () => {
+            try {
+                const userData = await authService.getUserData();
+                if (userData?.email) {
+                    await fetchCards(userData.email);
+                }
+            } catch (error) {
+                console.error("Error fetching cards:", error.message);
+            }
+        };
+
+        loadCards();
+    }, []);
+
 
     // Fetch slots
     useEffect(() => {
@@ -145,6 +165,48 @@ export default function Booking() {
         } catch (error) {
             console.error("Booking error:", error);
             Alert.alert("Error", "An error occurred while saving the booking.");
+        }
+    };
+
+
+    // get total minutes
+    const getTotalMinutes = (start, end, startMeridian, endMeridian) => {
+        const [startH, startM] = start.split(":").map(Number);
+        const [endH, endM] = end.split(":").map(Number);
+
+        let startHour24 = startMeridian === "p.m" && startH !== 12 ? startH + 12 : startH;
+        if (startMeridian === "a.m" && startH === 12) startHour24 = 0;
+
+        let endHour24 = endMeridian === "p.m" && endH !== 12 ? endH + 12 : endH;
+        if (endMeridian === "a.m" && endH === 12) endHour24 = 0;
+
+        const startDate = new Date(2024, 0, 1, startHour24, startM);
+        const endDate = new Date(2024, 0, 1, endHour24, endM);
+
+        if (endDate < startDate) {
+            endDate.setDate(endDate.getDate() + 1);
+        }
+
+        const diffMs = endDate - startDate;
+        return Math.floor(diffMs / (1000 * 60)); // total minutes
+    };
+
+    // Calculate total payment
+    const calculatePayment = (start, end, startMeridian, endMeridian, ratePerHour) => {
+        const totalMinutes = getTotalMinutes(start, end, startMeridian, endMeridian);
+        const totalHours = totalMinutes / 60;
+        return Math.ceil(totalHours * ratePerHour); // round up payment
+    };
+
+
+    const fetchCards = async (email) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/get_card/${email}`);
+            // make sure it's always an array
+            setSavedCards(Array.isArray(response.data) ? response.data : [response.data]);
+        } catch (erro) {
+            console.log("No cards found for this user yet.");
+            setSavedCards([]);
         }
     };
 
@@ -250,15 +312,77 @@ export default function Booking() {
                         </View>
                     )}
 
-                    {/* STEP 2 */}
+                    {/* STEP 2.. */}
                     {currentStep === 2 && (
                         <View style={styles.container}>
-                            <Text style={styles.label}>Confirm Booking</Text>
-                            <Text>Driver: {user?.id}</Text>
-                            <Text>Vehicle: {vehicleID}</Text>
-                            <Text>Slot: {slotID}</Text>
-                            <Text>Duration: {calculateDuration(startTime, endTime, startMeridian, endMeridian)}</Text>
+                            <View style={styles.paymentdetails}>
+                                <View style={styles.paymentleftflow}>
+                                    <View style={styles.paymenttextroe}>
+                                        <Text style={styles.paymenttext}>Driver</Text>
+                                        <View style={styles.primerytext}>
+                                            <Text style={styles.paymenttext}>{user?.email}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.paymenttextroe}>
+                                        <Text style={styles.paymenttext}>Slot:</Text>
+                                        <View style={styles.primerytext}>
+                                            <Text style={styles.paymenttext}>{slotID}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.paymenttextroe}>
+                                        <Text style={styles.paymenttext}>Duration</Text>
+                                        <View style={styles.primerytext}>
+                                            <Text style={styles.paymenttext}>{calculateDuration(startTime, endTime, startMeridian, endMeridian)}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.paymenttextroe}>
+                                        <Text style={styles.paymenttext}>Date:</Text>
+                                        <View style={styles.primerytext}>
+                                            <Text style={styles.paymenttext}>{selectedDate.toDateString()}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.paymenttextroe}>
+                                        <Text style={styles.paymenttext}>Per Hour</Text>
+                                        <View style={styles.primerytext}>
+                                            <Text style={styles.paymenttext}>LKR 500</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.paymenttextroe}>
+                                        <Text style={styles.paymenttext}>Total Payment:</Text>
+                                        <View style={styles.primerytext}>
+                                            <Text style={styles.paymenttext}>LKR {calculatePayment(startTime, endTime, startMeridian, endMeridian, 500)}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </View>
 
+                            {/* Show saved cards */}
+                            {savedCards.length > 0 ? (
+                                savedCards.map((card, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={styles.cardRow}
+                                        onPress={() => setSelectedCard(card.cardnumber)} // select by cardnumber or id
+                                    >
+                                        {/* Radio Button */}
+                                        <View style={styles.radioOuter}>
+                                            {selectedCard === card.cardnumber && <View style={styles.radioInner} />}
+                                        </View>
+
+                                        {/* Card Info */}
+                                        <View style={styles.cardDisplay}>
+                                            <Text style={styles.cardtitle}>Payment</Text>
+                                            <Text style={styles.cardText}>
+                                                Card Number: **** **** **** {card.cardnumber.slice(-4)}
+                                            </Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                ))
+                            ) : (
+                                <Text style={{ textAlign: "center", marginTop: 10 }}>
+                                    No saved cards yet.
+                                </Text>
+                            )}
                             <View style={styles.centeraliment}>
                                 <TouchableOpacity
                                     style={[styles.submitbtn, { backgroundColor: "#ccc" }]}
@@ -272,7 +396,9 @@ export default function Booking() {
                                 </TouchableOpacity>
                             </View>
                         </View>
+
                     )}
+
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>
@@ -342,4 +468,73 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold'
     },
+    cardDisplay: {
+        marginTop: 20,
+        padding: 15,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 10,
+        backgroundColor: '#FFFD78',
+        marginHorizontal: 10,
+    },
+    cardText: {
+        fontSize: 18,
+        fontWeight: '500',
+    },
+    cardtitle: {
+        fontSize: 30,
+        marginBottom: 5,
+    },
+    paymentdetails: {
+        alignItems: 'center',
+    },
+    paymenttitle: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        marginBottom: 15,
+        marginTop: -35,
+    },
+    paymentleftflow: {
+        borderWidth: 1,
+        width: 350,
+        height: 230,
+        borderRadius: 25,
+        padding: 20,
+    },
+    paymenttext: {
+        fontSize: 18,
+    },
+    paymenttextroe: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginVertical: 3,
+    },
+    primerytext: {
+        alignItems: 'flex-start',
+    },
+    cardRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginVertical: 8,
+    },
+
+    radioOuter: {
+        height: 20,
+        width: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: "#000",
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 10,
+    },
+
+    radioInner: {
+        height: 10,
+        width: 10,
+        borderRadius: 5,
+        backgroundColor: "#000",
+    },
+
 });

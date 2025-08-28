@@ -8,7 +8,7 @@ import API_BASE_URL from '../../config/ipconfig';
 import axios from 'axios';
 
 export default function CarSelect() {
-  const [color, setColor] = useState("#000"); // default black
+  const [color, setColor] = useState("#000"); 
   const [email, onChangeEmail] = React.useState('');
   const [model, onChangeModel] = React.useState('');
   const [licenseplate, onChangelicenseplate] = React.useState('');

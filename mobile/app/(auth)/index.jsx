@@ -1,15 +1,15 @@
-import { SafeAreaView, StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity, Image } from 'react-native'
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import React from 'react';
 import { Link, router } from 'expo-router';
 import axios from 'axios';
-import API_BASE_URL  from '../../config/ipconfig';
+import API_BASE_URL from '../../config/ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FrontVector from '../../assets/images/login-front-vector.svg';
 import RearVector from '../../assets/images/login-rear-vector.svg';
-import GoogleIcon from '../../assets/images/google-icon.svg';
-import XIcon from '../../assets/images/x-icon.svg';
-import FacebookIcon from '../../assets/images/facebook-icon.svg';
+import GoogleIcon from '../../assets/images/google.png';
+import XIcon from '../../assets/images/xicon.png';
+import FacebookIcon from '../../assets/images/facebook.png';
 
 export default function Login() {
   const [email, onChangeEmail] = React.useState('');
@@ -71,9 +71,9 @@ export default function Login() {
             <Text style={styles.options}>or sign in with</Text>
           </View>
           <View style={styles.iconview}>
-            <XIcon style={styles.icon} />
-            <GoogleIcon style={styles.icon} />
-            <FacebookIcon style={styles.icon} />
+            <Image source={XIcon} style={styles.icon} />
+            <Image source={FacebookIcon} style={styles.icon} />
+            <Image source={GoogleIcon} style={styles.icon} />
           </View>
           <View style={styles.navigation}>
             <Link href="/signup">
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
     height: 80,
   },
   icon: {
-    width: 180,
-    height: 180,
+    width: 57,
+    height: 60,
   },
   scrollView: {
     padding: 20,
