@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ScrollView, View, StyleSheet, Text, ActivityIndicator, Alert, TouchableOpacity, SafeAreaView, } from 'react-native';
+import { ScrollView, View, StyleSheet, Text, ActivityIndicator, Alert, TouchableOpacity, SafeAreaView } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import axios from 'axios';
 import authService from '../services/authService';
 import API_BASE_URL from '../../config/ipconfig';
-
-
 
 export default function Booking() {
     const [open, setOpen] = useState(false);
@@ -15,7 +13,6 @@ export default function Booking() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // New state for slots
     const [slotOpen, setSlotOpen] = useState(false);
     const [slotID, setSlotID] = useState(null);
     const [slotItems, setSlotItems] = useState([]);
@@ -23,7 +20,6 @@ export default function Booking() {
 
     const [user, setUser] = useState(null);
 
-    // Duration state
     const [startTime, setStartTime] = useState('07:00');
     const [endTime, setEndTime] = useState('11:00');
     const [startMeridian, setStartMeridian] = useState('a.m');
@@ -31,9 +27,11 @@ export default function Booking() {
     const [isPickerVisible, setPickerVisible] = useState(false);
     const [activePicker, setActivePicker] = useState(null);
 
-    const [selectedDate, setSelectedDate] = useState(new Date()); // default today
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
-    // Fetch user vehicles
+    const [currentStep, setCurrentStep] = useState(1);
+
+    // Fetch vehicles
     useEffect(() => {
         const fetchCars = async () => {
             try {
@@ -42,13 +40,11 @@ export default function Booking() {
                     Alert.alert("Error", "User email not found.");
                     return;
                 }
-
                 const res = await axios.get(`${API_BASE_URL}/get_vehicle/${userData.email}`);
                 const carItems = res.data.map((car) => ({
                     label: `${car.licenseplate} - ${car.make} ${car.model}`,
                     value: car.id,
                 }));
-
                 setItems(carItems);
             } catch (error) {
                 console.error("Error fetching vehicles:", error);
@@ -57,11 +53,10 @@ export default function Booking() {
                 setLoading(false);
             }
         };
-
         fetchCars();
     }, []);
 
-    // Fetch available slots
+    // Fetch slots
     useEffect(() => {
         const fetchSlots = async () => {
             try {
@@ -70,7 +65,6 @@ export default function Booking() {
                     label: `Slot ${slot.slotnumber} - Lot ${slot.parkinglotid}`,
                     value: slot.slotid,
                 }));
-
                 setSlotItems(slots);
             } catch (error) {
                 console.error("Error fetching slots:", error);
@@ -79,15 +73,8 @@ export default function Booking() {
                 setSlotLoading(false);
             }
         };
-
         fetchSlots();
     }, []);
-
-    // Time Picker functions
-    const showPicker = (picker) => {
-        setActivePicker(picker);
-        setPickerVisible(true);
-    };
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -100,6 +87,11 @@ export default function Booking() {
         };
         fetchUserData();
     }, []);
+
+    const showPicker = (picker) => {
+        setActivePicker(picker);
+        setPickerVisible(true);
+    };
 
     const hidePicker = () => setPickerVisible(false);
 
@@ -129,18 +121,15 @@ export default function Booking() {
         }
 
         try {
-            // Convert start/end time strings ("07:00") to "HH:MM:SS" format
-            const startTimeStr = `${startTime}:00`; // "07:00:00"
+            const startTimeStr = `${startTime}:00`;
             const endTimeStr = `${endTime}:00`;
-
-            // Convert selectedDate to YYYY-MM-DD
             const dateStr = selectedDate.toISOString().split('T')[0];
 
             const bookingData = {
                 date: dateStr,
                 StartTime: startTimeStr,
                 EndTime: endTimeStr,
-                status: "Occupied", // default status
+                status: "Occupied",
                 DriverID: user?.id,
                 VechicalID: vehicleID,
                 slotid: slotID
@@ -153,98 +142,140 @@ export default function Booking() {
             } else {
                 Alert.alert("Error", "Failed to save booking.");
             }
-
         } catch (error) {
             console.error("Booking error:", error);
             Alert.alert("Error", "An error occurred while saving the booking.");
         }
     };
 
+    const calculateDuration = (start, end, startMeridian, endMeridian) => {
+        const [startH, startM] = start.split(":").map(Number);
+        const [endH, endM] = end.split(":").map(Number);
+
+        let startHour24 = startMeridian === "p.m" && startH !== 12 ? startH + 12 : startH;
+        if (startMeridian === "a.m" && startH === 12) startHour24 = 0;
+
+        let endHour24 = endMeridian === "p.m" && endH !== 12 ? endH + 12 : endH;
+        if (endMeridian === "a.m" && endH === 12) endHour24 = 0;
+
+        const startDate = new Date(2024, 0, 1, startHour24, startM);
+        const endDate = new Date(2024, 0, 1, endHour24, endM);
+
+        if (endDate < startDate) {
+            endDate.setDate(endDate.getDate() + 1);
+        }
+
+        const diffMs = endDate - startDate;
+        const diffMins = Math.floor(diffMs / (1000 * 60));
+        const hours = Math.floor(diffMins / 60);
+        const minutes = diffMins % 60;
+
+        if (hours === 0) return `${minutes} min`;
+        if (minutes === 0) return `${hours} hr`;
+        return `${hours} hr ${minutes} min`;
+    };
 
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.maincontainer}>
                 <ScrollView contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.container}>
-                        <Text>DriverID = {user?.id ?? 'Guest'}</Text>
+                    {/* STEP 1 */}
+                    {currentStep === 1 && (
+                        <View style={styles.container}>
+                            <Text>DriverID = {user?.id ?? 'Guest'}</Text>
 
-                        {/* Vehicle Dropdown */}
-                        <Text style={styles.label}>Select your vehicle</Text>
-                        {loading ? (
-                            <ActivityIndicator size="large" color="#000" />
-                        ) : (
-                            <DropDownPicker
-                                open={open}
-                                value={vehicleID}
-                                items={items}
-                                setOpen={setOpen}
-                                setValue={setVechicleID}
-                                setItems={setItems}
-                                placeholder="Choose your car"
-                                listMode="SCROLLVIEW"
-                                style={styles.dropdown}
+                            <Text style={styles.label}>Select your vehicle</Text>
+                            {loading ? (
+                                <ActivityIndicator size="large" color="#000" />
+                            ) : (
+                                <DropDownPicker
+                                    open={open}
+                                    value={vehicleID}
+                                    items={items}
+                                    setOpen={setOpen}
+                                    setValue={setVechicleID}
+                                    setItems={setItems}
+                                    placeholder="Choose your car"
+                                    listMode="SCROLLVIEW"
+                                    style={styles.dropdown}
+                                />
+                            )}
+
+                            <Text style={styles.label}>Select Available Slot</Text>
+                            {slotLoading ? (
+                                <ActivityIndicator size="large" color="#000" />
+                            ) : (
+                                <DropDownPicker
+                                    open={slotOpen}
+                                    value={slotID}
+                                    items={slotItems}
+                                    setOpen={setSlotOpen}
+                                    setValue={setSlotID}
+                                    setItems={setSlotItems}
+                                    placeholder="Choose a slot"
+                                    listMode="SCROLLVIEW"
+                                    style={styles.dropdown}
+                                />
+                            )}
+
+                            <View style={styles.durationContainer}>
+                                <Text style={styles.label}>Duration</Text>
+                                <View style={styles.row}>
+                                    <TouchableOpacity style={styles.timeBox} onPress={() => showPicker('start')}>
+                                        <Text style={styles.timeText}>{startTime}</Text>
+                                        <Text style={styles.meridian}>{startMeridian}</Text>
+                                    </TouchableOpacity>
+
+                                    <Text style={styles.toText}>To</Text>
+
+                                    <TouchableOpacity style={styles.timeBox} onPress={() => showPicker('end')}>
+                                        <Text style={styles.timeText}>{endTime}</Text>
+                                        <Text style={styles.meridian}>{endMeridian}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            <DateTimePickerModal
+                                isVisible={isPickerVisible}
+                                mode="time"
+                                onConfirm={handleConfirm}
+                                onCancel={hidePicker}
                             />
-                        )}
 
-                        {/* Slot Dropdown */}
-                        <Text style={styles.label}>Select Available Slot</Text>
-                        {slotLoading ? (
-                            <ActivityIndicator size="large" color="#000" />
-                        ) : (
-                            <DropDownPicker
-                                open={slotOpen}
-                                value={slotID}
-                                items={slotItems}
-                                setOpen={setSlotOpen}
-                                setValue={setSlotID}
-                                setItems={setSlotItems}
-                                placeholder="Choose a slot"
-                                listMode="SCROLLVIEW"
-                                style={styles.dropdown}
-                            />
-                        )}
-
-                        {/* Duration Selector */}
-                        <View style={styles.durationContainer}>
-                            <Text style={styles.label}>Duration</Text>
-                            <View style={styles.row}>
-                                <TouchableOpacity
-                                    style={styles.timeBox}
-                                    onPress={() => showPicker('start')}
-                                >
-                                    <Text style={styles.timeText}>{startTime}</Text>
-                                    <Text style={styles.meridian}>{startMeridian}</Text>
-                                </TouchableOpacity>
-
-                                <Text style={styles.toText}>To</Text>
-
-                                <TouchableOpacity
-                                    style={styles.timeBox}
-                                    onPress={() => showPicker('end')}
-                                >
-                                    <Text style={styles.timeText}>{endTime}</Text>
-                                    <Text style={styles.meridian}>{endMeridian}</Text>
+                            <View style={styles.centeraliment}>
+                                <TouchableOpacity style={styles.submitbtn} onPress={() => setCurrentStep(2)}>
+                                    <Text style={styles.btntext}>Next</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
+                    )}
 
-                        {/* Time Picker Modal */}
-                        <DateTimePickerModal
-                            isVisible={isPickerVisible}
-                            mode="time"
-                            onConfirm={handleConfirm}
-                            onCancel={hidePicker}
-                        />
-                    </View>
-                    <View style={styles.centeraliment}>
-                        <TouchableOpacity style={styles.submitbtn} onPress={handleSubmit}>
-                            <Text style={styles.btntext}>Occupied</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {/* STEP 2 */}
+                    {currentStep === 2 && (
+                        <View style={styles.container}>
+                            <Text style={styles.label}>Confirm Booking</Text>
+                            <Text>Driver: {user?.id}</Text>
+                            <Text>Vehicle: {vehicleID}</Text>
+                            <Text>Slot: {slotID}</Text>
+                            <Text>Duration: {calculateDuration(startTime, endTime, startMeridian, endMeridian)}</Text>
+
+                            <View style={styles.centeraliment}>
+                                <TouchableOpacity
+                                    style={[styles.submitbtn, { backgroundColor: "#ccc" }]}
+                                    onPress={() => setCurrentStep(1)}
+                                >
+                                    <Text style={styles.btntext}>Back</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.submitbtn} onPress={handleSubmit}>
+                                    <Text style={styles.btntext}>Submit</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>
-
     );
 }
 
@@ -301,7 +332,6 @@ const styles = StyleSheet.create({
     submitbtn: {
         backgroundColor: '#FFFC35',
         borderWidth: 0,
-        borderColor: '#000',
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: 'center',
