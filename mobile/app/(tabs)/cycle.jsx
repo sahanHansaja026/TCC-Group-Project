@@ -11,7 +11,7 @@ export default function Appcycle() {
       <View style={styles.bottomBox}>
         <TouchableOpacity style={styles.yellowbar} activeOpacity={0.7} onPress={() => router.push("/(components)/bokking")} >
           <View style={styles.paddingofyellobar}>
-            <Text style={styles.yellowbartitles}>Billing Information</Text>
+            <Text style={styles.yellowbartitles}>Select Your Parking Lot</Text>
           </View>
         </TouchableOpacity>
       </View>
