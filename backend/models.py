@@ -1,6 +1,6 @@
 import email
 from enum import unique
-from sqlalchemy import Column,Integer,String,LargeBinary,Time,Date # type: ignore
+from sqlalchemy import Column,Numeric,Integer,String,LargeBinary,Time,Date # type: ignore
 from database import Base
 
 class User(Base):
@@ -57,3 +57,13 @@ class Bokking(Base):
     VechicalID = Column(Integer, nullable=False)
     slotid = Column(Integer, nullable=False)
     
+class CardPayment(Base):
+    __tablename__ = "payments"
+    
+    TransactionID = Column(Integer, primary_key=True, index=True)
+    Amount = Column(Numeric(10, 2), nullable=False)   # Decimal/Numeric
+    date = Column(Date, nullable=False)
+    status = Column(String, nullable=False)
+    PaymentMethod = Column(String, nullable=False)
+    SessionID = Column(Integer, nullable=False)
+    SubscriptionID = Column(Integer, nullable=False)

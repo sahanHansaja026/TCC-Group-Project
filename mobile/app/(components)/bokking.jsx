@@ -134,40 +134,7 @@ export default function Booking() {
         hidePicker();
     };
 
-    const handleSubmit = async () => {
-        if (!vehicleID || !slotID) {
-            Alert.alert("Error", "Please select a vehicle and a slot.");
-            return;
-        }
-
-        try {
-            const startTimeStr = `${startTime}:00`;
-            const endTimeStr = `${endTime}:00`;
-            const dateStr = selectedDate.toISOString().split('T')[0];
-
-            const bookingData = {
-                date: dateStr,
-                StartTime: startTimeStr,
-                EndTime: endTimeStr,
-                status: "Occupied",
-                DriverID: user?.id,
-                VechicalID: vehicleID,
-                slotid: slotID
-            };
-
-            const res = await axios.post(`${API_BASE_URL}/create_booking`, bookingData);
-
-            if (res.status === 200 || res.status === 201) {
-                Alert.alert("Success", "Booking saved successfully!");
-            } else {
-                Alert.alert("Error", "Failed to save booking.");
-            }
-        } catch (error) {
-            console.error("Booking error:", error);
-            Alert.alert("Error", "An error occurred while saving the booking.");
-        }
-    };
-
+    
 
     // get total minutes
     const getTotalMinutes = (start, end, startMeridian, endMeridian) => {
@@ -235,6 +202,62 @@ export default function Booking() {
         if (hours === 0) return `${minutes} min`;
         if (minutes === 0) return `${hours} hr`;
         return `${hours} hr ${minutes} min`;
+    };
+
+    const handleSubmit = async () => {
+        if (!vehicleID || !slotID || !selectedCard) {
+            Alert.alert("Error", "Please select a vehicle, a slot, and a card.");
+            return;
+        }
+
+        try {
+            const startTimeStr = `${startTime}:00`;
+            const endTimeStr = `${endTime}:00`;
+            const dateStr = selectedDate.toISOString().split('T')[0];
+
+            // 1️⃣ First, create booking
+            const bookingData = {
+                date: dateStr,
+                StartTime: startTimeStr,
+                EndTime: endTimeStr,
+                status: "Occupied",
+                DriverID: user?.id,
+                VechicalID: vehicleID,
+                slotid: slotID
+            };
+
+            const bookingRes = await axios.post(`${API_BASE_URL}/create_booking`, bookingData);
+
+            if (bookingRes.status === 200 || bookingRes.status === 201) {
+                const booking = bookingRes.data;
+
+                //  Calculate total payment
+                const amount = calculatePayment(startTime, endTime, startMeridian, endMeridian, 500);
+
+                // Save payment record
+                const paymentData = {
+                    Amount: parseFloat(amount),
+                    date: new Date().toISOString().split("T")[0],
+                    status: "Paid",
+                    PaymentMethod: `card payment`,
+                    SessionID: user.id,
+                    SubscriptionID: user.id
+                };
+
+                const paymentRes = await axios.post(`${API_BASE_URL}/save_payment`, paymentData);
+
+                if (paymentRes.status === 200 || paymentRes.status === 201) {
+                    Alert.alert("Success", "Booking & Payment saved successfully!");
+                } else {
+                    Alert.alert("Error", "Booking saved, but payment failed.");
+                }
+            } else {
+                Alert.alert("Error", "Failed to save booking.");
+            }
+        } catch (error) {
+            console.error("Booking/Payment error:", error);
+            Alert.alert("Error", "An error occurred while saving booking/payment.");
+        }
     };
 
     return (

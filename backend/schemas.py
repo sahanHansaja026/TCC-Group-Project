@@ -68,7 +68,7 @@ class SlotBase(BaseModel):
     parkinglotid: int
 
 class SlotResponse(SlotBase):
-    slotid: int  # must match your model column name
+    slotid: int  
 
     class Config:
         orm_mode = True
@@ -93,3 +93,22 @@ class BookingResponse(BookingBase):
 
     class Config:
         orm_mode = True
+        
+class CardPaymentBase(BaseModel):
+    Amount: float
+    date: date
+    status: str
+    PaymentMethod: str
+    SessionID: int
+    SubscriptionID: int
+
+
+class CardPaymentCreate(CardPaymentBase):
+    pass
+
+
+class CardPaymentResponse(CardPaymentBase):
+    TransactionID: int
+
+    class Config:
+        orm_mode = True  
