@@ -7,6 +7,7 @@ export default function Componentlayout() {
             <Stack screenOptions={{ headerShown: true }}>
                 <Stack.Screen name="index" options={{ title: "Profile Edit" }} />
                 <Stack.Screen name="billing" options={{ title:"Billing Information"}}/>
+                <Stack.Screen name="help" options={{ title:"Help & Support"}}/>
             </Stack>
         </SafeAreaProvider>
     );
