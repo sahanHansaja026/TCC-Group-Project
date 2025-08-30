@@ -41,7 +41,8 @@ def get_ongoing_bookings(driver_id: int, db: Session = Depends(get_db)):
             ongoing_bookings.append(b)
 
     if not ongoing_bookings:
-        raise HTTPException(status_code=404, detail="No ongoing bookings found for this driver")
+        raise HTTPException(status_code=404, detail="No completed bookings found for this driver")
+
 
     return ongoing_bookings
 
@@ -56,8 +57,7 @@ def get_completed_bookings(driver_id: int, db: Session = Depends(get_db)):
     ).all()
 
     completed_bookings = [b for b in bookings if datetime.combine(b.date, b.EndTime) < now]
-
-    if not completed_bookings:
-        raise HTTPException(status_code=404, detail="No completed bookings found for this driver")
-
+    
+    # Always return a list, even if empty
     return completed_bookings
+

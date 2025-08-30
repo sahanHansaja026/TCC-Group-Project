@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View, TextInput, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import { SafeAreaView, StyleSheet, View, TextInput, Text, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Car from "../../assets/cars/car.svg";
 import Headersvg from "../../assets/cars/modernhedder.svg";
@@ -8,7 +8,7 @@ import API_BASE_URL from '../../config/ipconfig';
 import axios from 'axios';
 
 export default function CarSelect() {
-  const [color, setColor] = useState("#000"); 
+  const [color, setColor] = useState("#000");
   const [email, onChangeEmail] = React.useState('');
   const [model, onChangeModel] = React.useState('');
   const [licenseplate, onChangelicenseplate] = React.useState('');
@@ -63,78 +63,78 @@ export default function CarSelect() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.maincontainer}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.imagecontainer}>
-            <Headersvg style={styles.image} />
+        {/* 👇 Wrap with KeyboardAvoidingView */}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={80} // adjust if header overlaps
+        >
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            <View style={styles.imagecontainer}>
+              <Headersvg style={styles.image} />
 
-            {/* Overlay title text */}
-            <Text style={styles.title}>Vehicle Management</Text>
-          </View>
-          <View style={styles.carimage}>
-            <Text style={styles.title}>Add Vehical</Text>
-            <Car width={250} height={200} fill={color} />
-          </View>
-          <View style={styles.form}>
+              {/* Overlay title text */}
+              <Text style={styles.title}>Vehicle Management</Text>
+            </View>
+            <View style={styles.carimage}>
+              <Text style={styles.title}>Add Vehicle</Text>
+              <Car width={250} height={200} fill={color} />
+            </View>
+            <View style={styles.form}>
 
-            <Text style={styles.lable}>Email</Text>
-            <TextInput
-              style={styles.input}
-              value={email}
-              editable={false}
-            />
-
-            <Text style={styles.lable}> License Plate</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangelicenseplate}
-              placeholder=" License Plate"
-              value={licenseplate}
-              keyboardType=" License Plate"
-              autoCapitalize="none"
-            />
-
-            <Text style={styles.lable}>Model</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeModel}
-              placeholder="Car Model"
-              value={model}
-              keyboardType="model"
-              autoCapitalize="none"
-            />
-
-            <Text style={styles.lable}>Colour</Text>
-            <View style={styles.colorInputContainer}>
-              {/* Color preview box */}
-              <View style={[styles.colorBox, { backgroundColor: color }]} />
-
-              {/* Input field */}
+              <Text style={styles.lable}>Email</Text>
               <TextInput
-                style={styles.colorInput}
-                placeholder="Enter a color (e.g. #ff0000 or rgb(0,255,0))"
-                value={color}
-                onChangeText={setColor}
+                style={styles.input}
+                value={email}
+                editable={false}
               />
+
+              <Text style={styles.lable}> License Plate</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangelicenseplate}
+                placeholder=" License Plate"
+                value={licenseplate}
+              />
+
+              <Text style={styles.lable}>Model</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangeModel}
+                placeholder="Car Model"
+                value={model}
+              />
+
+              <Text style={styles.lable}>Colour</Text>
+              <View style={styles.colorInputContainer}>
+                {/* Color preview box */}
+                <View style={[styles.colorBox, { backgroundColor: color }]} />
+
+                {/* Input field */}
+                <TextInput
+                  style={styles.colorInput}
+                  placeholder="Enter a color (e.g. #ff0000)"
+                  value={color}
+                  onChangeText={setColor}
+                />
+              </View>
+
+              <Text style={styles.lable}>Country</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onchangeMake}
+                placeholder="Made In .. "
+                value={make}
+              />
+
+              <View style={styles.centeraliment}>
+                <TouchableOpacity style={styles.submitbtn} onPress={handleSubmit}>
+                  <Text style={styles.btntext}>Save My Car</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-
-
-            <Text style={styles.lable}>Country</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={onchangeMake}
-              placeholder="Made In .. "
-              value={make}
-              keyboardType="make"
-              autoCapitalize="none"
-            />
-
-            <View style={styles.centeraliment}>
-              <TouchableOpacity style={styles.submitbtn} onPress={handleSubmit}>
-                <Text style={styles.btntext}>Save My Car</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -221,6 +221,4 @@ const styles = StyleSheet.create({
     height: 50,
     fontSize: 18,
   },
-
 });
-

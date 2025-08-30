@@ -12,7 +12,8 @@ import Aiicon from "../../assets/images/Artificial intelligence-amico.png";
 import Payment from "../../assets/images/Plain credit card-bro.png";
 import CarRide from "../../assets/images/Car rental-rafiki.png";
 import Location from "../../assets/images/Location review-amico.png";
-import Safe from "../../assets/images/Coronavirus Border Closure-cuate (1).png"
+import Safe from "../../assets/images/Coronavirus Border Closure-cuate (1).png";
+import SafeOfCar from "../../assets/images/Order ride-pana.png"
 
 const { width } = Dimensions.get("window");
 
@@ -109,7 +110,9 @@ export default function Home() {
               <View style={styles.icon}>
                 <Image source={Safe} style={styles.iconimages} />
               </View>
-              <View style={styles.icon}></View>
+              <View style={styles.icon}>
+                <Image source={SafeOfCar} style={styles.iconimages} />
+              </View>
             </View>
 
           </View>

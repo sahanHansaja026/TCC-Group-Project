@@ -134,7 +134,7 @@ export default function Booking() {
         hidePicker();
     };
 
-    
+
 
     // get total minutes
     const getTotalMinutes = (start, end, startMeridian, endMeridian) => {
@@ -234,14 +234,14 @@ export default function Booking() {
                 //  Calculate total payment
                 const amount = calculatePayment(startTime, endTime, startMeridian, endMeridian, 500);
 
-                // Save payment record
                 const paymentData = {
-                    Amount: parseFloat(amount),
-                    date: new Date().toISOString().split("T")[0],
-                    status: "Paid",
-                    PaymentMethod: `card payment`,
-                    SessionID: user.id,
-                    SubscriptionID: user.id
+                    Amount: parseFloat(amount),                    // ✅ matches float
+                    date: new Date().toISOString().split("T")[0],  // ✅ gives "YYYY-MM-DD" string → valid date
+                    status: "Paid",                                // ✅ string
+                    PaymentMethod: "card payment",                 // ✅ string
+                    SessionID: parseInt(user.id, 10),
+                    SubscriptionID: parseInt(user.id, 10),
+                    // ⚠️ must be integer
                 };
 
                 const paymentRes = await axios.post(`${API_BASE_URL}/save_payment`, paymentData);
@@ -267,8 +267,6 @@ export default function Booking() {
                     {/* STEP 1 */}
                     {currentStep === 1 && (
                         <View style={styles.container}>
-                            <Text>DriverID = {user?.id ?? 'Guest'}</Text>
-
                             <Text style={styles.label}>Select your vehicle</Text>
                             {loading ? (
                                 <ActivityIndicator size="large" color="#000" />
@@ -283,6 +281,8 @@ export default function Booking() {
                                     placeholder="Choose your car"
                                     listMode="SCROLLVIEW"
                                     style={styles.dropdown}
+                                    textStyle={{ fontSize: 18 }}  // selected value text
+                                    labelStyle={{ fontSize: 18 }} // dropdown items text
                                 />
                             )}
 
@@ -300,6 +300,8 @@ export default function Booking() {
                                     placeholder="Choose a slot"
                                     listMode="SCROLLVIEW"
                                     style={styles.dropdown}
+                                    textStyle={{ fontSize: 18 }}  // selected value text
+                                    labelStyle={{ fontSize: 18 }} // dropdown items text
                                 />
                             )}
 
@@ -438,12 +440,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginBottom: 10,
         fontWeight: 'bold',
+
     },
     dropdown: {
         minHeight: 50,
         borderWidth: 1,
         borderColor: '#000',
         marginBottom: 20,
+        fontSize: 25,
     },
     durationContainer: {
         marginTop: 30,
