@@ -66,6 +66,25 @@ export default function Componentlayout() {
                     ),
                 }}
             />
+            <Stack.Screen
+                name="addnewcar"
+                options={{
+                    title: "Add Vehicles",
+                    header: ({ navigation, options }) => (
+                        <CustomHeader
+                            title={options.title}
+                            onBack={navigation.goBack}
+                            titleStyle={{
+                                fontSize: 22,        // adjust size
+                                fontWeight: 'bold',  // bold text
+                                color: '#000',       // black color
+                                textAlign: 'center', // center alignment
+                            }}
+                        />
+                    ),
+                }}
+            />
+
             <Stack.Screen name="billing" options={{ title: "Billing Information" }} />
             <Stack.Screen name="aboutus" options={{ title: "About Us" }} />
             <Stack.Screen
