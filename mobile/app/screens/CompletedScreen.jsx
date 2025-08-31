@@ -2,79 +2,113 @@ import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator } from 're
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import API_BASE_URL from '../../config/ipconfig';
-import { useRouter } from "expo-router";
 import authService from "../services/authService";
 import StartDotimage from "../../assets/images/dotstart.png"
 import EndDotimage from "../../assets/images/enddot.png";
+import MonyIcon from "../../assets/images/money.png"
 
 export default function CompleteScreen() {
     const [user, setUser] = useState(null);
     const [bookings, setBookings] = useState([]);
+    const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchUserData = async () => {
+        let intervalId;
+
+        const fetchData = async () => {
             try {
                 const userData = await authService.getUserData();
                 setUser(userData);
 
                 if (userData?.id) {
-                    // Fetch bookings for this driver
-                    const response = await axios.get(
+                    // Fetch bookings
+                    const bookingsRes = await axios.get(
                         `${API_BASE_URL}/bookings/${userData.id}/completed`
                     );
+                    setBookings(bookingsRes.data || []);
 
-                    setBookings(response.data || []);
+                    // Fetch payments by subscriptionID == user.id
+                    const paymentsRes = await axios.get(
+                        `${API_BASE_URL}/payments/subscription/${userData.id}`
+                    );
+                    setPayments(paymentsRes.data || []);
                 }
             } catch (error) {
-                console.error("Error fetching bookings:", error.message);
+                console.error("Error fetching data:", error.message);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchUserData();
+        // Initial fetch
+        fetchData();
+
+        // Auto-refresh every 30 seconds
+        intervalId = setInterval(() => {
+            fetchData();
+        }, 30000);
+
+        return () => clearInterval(intervalId);
     }, []);
+
+    // Merge bookings + payments by index (assumes 1-to-1 match)
+    const combinedData = bookings.map((booking, index) => ({
+        booking,
+        payment: payments[index] || null,
+    }));
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.header}>Ongoing Vehicles Content</Text>
-            <Text style={styles.subHeader}>Driver ID: {user?.id ?? "Guest"}</Text>
-
             {loading ? (
                 <ActivityIndicator size="large" style={{ marginTop: 20 }} />
-            ) : bookings.length > 0 ? (
-                bookings.map((booking, index) => (
-                    <View key={index} style={styles.bookingCard}>
-                        <View style={styles.boxhedder}>
-                            <Text style={styles.bookingIdtext}>{booking.BookingID}</Text>
-                            <View style={styles.setdateandtime}>
-                                <Text style={styles.bookingText}>{booking.date}</Text>
-                                <Text style={styles.bookingText}>{booking.StartTime}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.separator} />
-                        <View style={styles.timecontainer}>
-                            <View style={styles.showtime}>
-                                <Image source={StartDotimage} style={styles.dotimage} />
-                                <Text style={styles.bookingText}>{booking.StartTime}</Text>
-                            </View>
-                            <View style={styles.showtime}>
-                                <Image source={EndDotimage} style={styles.dotimage} />
-                                <Text style={styles.bookingText}>{booking.EndTime}</Text>
-                            </View>
-
-                        </View>
-
-
-
-                        <Text style={styles.bookingText}>Status: {booking.status}</Text>
-                    </View>
-                ))
             ) : (
-                <Text style={{ marginTop: 20, fontSize: 16 }}>No bookings found.</Text>
+                <>
+                    {/* ----- Combined Bookings + Payments ----- */}
+                    {combinedData.length > 0 ? (
+                        combinedData.map((item, index) => (
+                            <View key={index} style={styles.bookingCard}>
+                                {/* Booking Details */}
+                                <View style={styles.boxhedder}>
+                                    <Text style={styles.bookingIdtext}>{item.booking.BookingID}</Text>
+                                    <View style={styles.setdateandtime}>
+                                        <Text style={styles.bookingText}>{item.booking.date}</Text>
+                                        <Text style={styles.bookingText}>{item.booking.StartTime}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.separator} />
+                                <View style={styles.timecontainer}>
+                                    <View style={styles.showtime}>
+                                        <Image source={StartDotimage} style={styles.dotimage} />
+                                        <Text style={styles.bookingText}>{item.booking.StartTime}</Text>
+                                    </View>
+                                    <View style={styles.showtime}>
+                                        <Image source={EndDotimage} style={styles.dotimage} />
+                                        <Text style={styles.bookingText}>{item.booking.EndTime}</Text>
+                                    </View>
+                                </View>
+
+                                {/* Payment Details */}
+                                {item.payment ? (
+                                    <View style={styles.paymentContainer}>
+                                        <Text style={styles.bookingText}>Method: {item.payment.PaymentMethod}</Text>
+                                        <View style={styles.pamentshow}>
+                                            <Image source={MonyIcon} style={styles.moneyicons} />
+                                            <Text style={styles.monytext}>LKR{ " "}{item.payment.Amount}</Text>
+                                        </View>                                    
+                                    </View>
+                                ) : (
+                                    <Text style={{ marginTop: 10, fontSize: 16 }}>No payment found for this booking.</Text>
+                                )}
+                            </View>
+                        ))
+                    ) : (
+                        <Text style={{ marginTop: 20, fontSize: 16 }}>No completed bookings found.</Text>
+                    )}
+                </>
             )}
         </ScrollView>
+
     );
 }
 
@@ -96,8 +130,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFD78",
         padding: 12,
         marginBottom: 12,
-        width: 380,
-        height: 250,
+        width: 350,
+        height:"auto",
         borderWidth: 1,
         borderColor: "#FFFD78",
         borderRadius: 25, // half of height/width for rounded corners
@@ -107,7 +141,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     bookingText: {
-        fontSize: 18,
+        fontSize: 20,
         marginBottom: 4,
     },
 
@@ -123,7 +157,7 @@ const styles = StyleSheet.create({
     boxhedder: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 220,
+        gap: 180,
     },
     setdateandtime: {
         flexDirection: 'column',
@@ -140,5 +174,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 15,
+    },
+    pamentshow: {
+        flexDirection: 'row',
+        marginLeft: 140,
+        alignItems: 'center',
+        gap:10,
+    },
+    monytext: {
+        fontSize:25,
+    },
+    moneyicons: {
+        width: 35,
+        height: 35,
     }
 });

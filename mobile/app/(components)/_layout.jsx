@@ -53,6 +53,19 @@ export default function Componentlayout() {
                     ),
                 }}
             />
+            <Stack.Screen
+                name="help"
+                options={{
+                    title: "Help And Support",
+                    header: ({ navigation, options }) => (
+                        <CustomHeader
+                            title={options.title}
+                            subtitle="Find answers and get the support you need"
+                            onBack={navigation.goBack}
+                        />
+                    ),
+                }}
+            />
             <Stack.Screen name="billing" options={{ title: "Billing Information" }} />
             <Stack.Screen name="aboutus" options={{ title: "About Us" }} />
             <Stack.Screen

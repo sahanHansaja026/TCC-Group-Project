@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   image1: {
     width: '100%',
-    height: '100%',
+    height: '80%',
   },
   image2: {
     width: '100%',
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   middlecontainer: {
     width: '100%',
-    height: '100%', 
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   image3: {
     position: 'absolute',
     width: 380,
-    height:350,
+    height: 350,
 
   }
 })

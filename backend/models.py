@@ -61,7 +61,7 @@ class CardPayment(Base):
     __tablename__ = "payments"
     
     TransactionID = Column(Integer, primary_key=True, index=True)
-    Amount = Column(Numeric(10, 2), nullable=False)   # Decimal/Numeric
+    Amount = Column(Numeric(10, 2), nullable=False)   
     date = Column(Date, nullable=False)
     status = Column(String, nullable=False)
     PaymentMethod = Column(String, nullable=False)

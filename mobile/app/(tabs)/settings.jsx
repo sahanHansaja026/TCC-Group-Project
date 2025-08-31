@@ -57,8 +57,9 @@ export default function Settings() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <FrontVector style={styles.image} />
+        
         <ScrollView contentContainerStyle={styles.scrollContent}>
+          <FrontVector style={styles.image} />
           <Text style={styles.maintitle}>Settings</Text>
           <View style={styles.settingssection}>  
 
