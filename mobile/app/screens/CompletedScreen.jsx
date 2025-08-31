@@ -93,7 +93,7 @@ export default function CompleteScreen() {
                                     <View style={styles.paymentContainer}>
                                         <Text style={styles.bookingText}>Method: {item.payment.PaymentMethod}</Text>
                                         <View style={styles.pamentshow}>
-                                            <Image source={MonyIcon} style={styles.dotimage} />
+                                            <Image source={MonyIcon} style={styles.moneyicons} />
                                             <Text style={styles.monytext}>LKR{ " "}{item.payment.Amount}</Text>
                                         </View>                                    
                                     </View>
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFD78",
         padding: 12,
         marginBottom: 12,
-        width: 380,
+        width: 350,
         height:"auto",
         borderWidth: 1,
         borderColor: "#FFFD78",
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     boxhedder: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 220,
+        gap: 180,
     },
     setdateandtime: {
         flexDirection: 'column',
@@ -177,11 +177,15 @@ const styles = StyleSheet.create({
     },
     pamentshow: {
         flexDirection: 'row',
-        marginLeft: 180,
+        marginLeft: 140,
         alignItems: 'center',
         gap:10,
     },
     monytext: {
         fontSize:25,
+    },
+    moneyicons: {
+        width: 35,
+        height: 35,
     }
 });
