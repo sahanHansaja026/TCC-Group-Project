@@ -19,7 +19,7 @@ export default function BookingTabs() {
           <View style={styles.container}>
             <View style={styles.imagecontainer}>
               <Headersvg style={styles.image} />
-              <Text style={styles.title}>Vehicle Management</Text>
+              <Text style={styles.title}>Your Reservations</Text>
             </View>
 
             <View style={styles.tabContainer}>
