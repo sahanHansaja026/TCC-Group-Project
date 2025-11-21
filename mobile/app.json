@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "EasyPark",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logoimage.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -15,12 +15,12 @@
       "package": "com.sahanhansaja.mobile",
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyAVmMIB8jcl1PgbGA4IDy3u0qv_8UPIo2w"
+          "apiKey": "process.env.GOOGLE_MAPS_API_KEY"
         }
       },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/logoimage.png",
+        "backgroundColor": "#FFFD78"
       },
       "edgeToEdgeEnabled": true
     },

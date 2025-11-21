@@ -1,7 +1,7 @@
-import { Stack } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Stack } from "expo-router";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
 
 // Custom header component
 function CustomHeader({ title, subtitle, onBack }) {
@@ -53,6 +53,48 @@ export default function Componentlayout() {
                     ),
                 }}
             />
+
+            <Stack.Screen
+                name="profile"
+                options={{
+                    title: "My Profile",
+                    header: ({ navigation, options }) => (
+                        <CustomHeader
+                            title={options.title}
+                            subtitle="Set up your profile so we can tailor the app experience just for you"
+                            onBack={navigation.goBack}
+                        />
+                    ),
+                }}
+            />
+
+            <Stack.Screen
+                name="caredit"
+                options={{
+                    title: "Your Vehicle Information",
+                    header: ({ navigation, options }) => (
+                        <CustomHeader
+                            title={options.title}
+                            subtitle="Here’s everything we know about this vehicle"
+                            onBack={navigation.goBack}
+                        />
+                    ),
+                }}
+            />
+
+            <Stack.Screen
+                name="editprofile"
+                options={{
+                    title: "Edit Your Profile",
+                    header: ({ navigation, options }) => (
+                        <CustomHeader
+                            title={options.title}
+                            subtitle="Here’s everything we know about this vehicle"
+                            onBack={navigation.goBack}
+                        />
+                    ),
+                }}
+            />
             <Stack.Screen
                 name="help"
                 options={{
@@ -62,6 +104,43 @@ export default function Componentlayout() {
                             title={options.title}
                             subtitle="Find answers and get the support you need"
                             onBack={navigation.goBack}
+                        />
+                    ),
+                }}
+            />
+            <Stack.Screen
+                name="addnewcar"
+                options={{
+                    title: "Add Vehicles",
+                    header: ({ navigation, options }) => (
+                        <CustomHeader
+                            title={options.title}
+                            onBack={navigation.goBack}
+                            titleStyle={{
+                                fontSize: 22,        // adjust size
+                                fontWeight: 'bold',  // bold text
+                                color: '#000',       // black color
+                                textAlign: 'center', // center alignment
+                            }}
+                        />
+                    ),
+                }}
+            />
+            <Stack.Screen
+                name="owner"
+                options={{
+                    title: "Your Parking Place",
+                    header: ({ navigation, options }) => (
+                        <CustomHeader
+                            title={options.title}
+                            subtitle="Find answers and get the support you need"
+                            onBack={navigation.goBack}
+                            titleStyle={{
+                                fontSize: 22,        // adjust size
+                                fontWeight: 'bold',  // bold text
+                                color: '#000',       // black color
+                                textAlign: 'center', // center alignment
+                            }}
                         />
                     ),
                 }}
@@ -81,6 +160,7 @@ export default function Componentlayout() {
                 }}
             />
         </Stack>
+
     );
 }
 

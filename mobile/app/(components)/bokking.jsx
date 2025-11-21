@@ -285,7 +285,7 @@ export default function Booking() {
                                     labelStyle={{ fontSize: 18 }} // dropdown items text
                                 />
                             )}
-
+                            <View style={styles.gapmaker}></View>
                             <Text style={styles.label}>Select Available Slot</Text>
                             {slotLoading ? (
                                 <ActivityIndicator size="large" color="#000" />
@@ -563,5 +563,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         backgroundColor: "#000",
     },
+    gapmaker: {
+        height: 50,
+    }
 
 });

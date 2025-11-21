@@ -1,142 +1,135 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View, TextInput, Text, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import Car from "../../assets/cars/car.svg";
-import Headersvg from "../../assets/cars/modernhedder.svg";
-import authService from "../services/authService";
-import API_BASE_URL from '../../config/ipconfig';
+import { SafeAreaView, StyleSheet, View, Text, FlatList, KeyboardAvoidingView, Platform, TouchableOpacity, Image, TextInput } from 'react-native';
+import React, { useCallback, useState, useEffect } from "react";
 import axios from 'axios';
+import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import API_BASE_URL from '../../config/ipconfig';
+import JeepIconIcon from "../../assets/cars/jeep.png"
+import CarIconIcon from "../../assets/cars/caricon.png";
+import authService from "../services/authService";
+import Headersvg from "../../assets/cars/modernhedder.svg";
+import AddVechiclesIcon from "../../assets/images/add vechicals.png";
 
-export default function CarSelect() {
-  const [color, setColor] = useState("#000");
-  const [email, onChangeEmail] = React.useState('');
-  const [model, onChangeModel] = React.useState('');
-  const [licenseplate, onChangelicenseplate] = React.useState('');
-  const [make, onchangeMake] = React.useState('');
+export default function Carselect({ navigation }) {
   const [user, setUser] = useState(null);
+  const [vehicles, setVehicles] = useState([]);
+  const [filteredVehicles, setFilteredVehicles] = useState([]); // For search filtering
+  const [loading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState("");
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userData = await authService.getUserData();
-        console.log("Logged-in user:", userData);
-        setUser(userData);
-        onChangeEmail(userData?.email || ""); // set email to field
-      } catch (error) {
-        console.error("Error fetching user data:", error.message);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  const handleSubmit = async () => {
-    if (!licenseplate || !model || !make || !color) {
-      Alert.alert("Error", "Please fill all fields.");
-      return;
-    }
-
+  // Fetch user data and vehicles
+  const fetchUserData = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/save_vehicle`, {
-        email,
-        licenseplate,
-        model,
-        make,
-        color,
-      });
+      setLoading(true);
+      const userData = await authService.getUserData();
+      setUser(userData);
 
-      console.log("Vehicle saved:", response.data);
-      Alert.alert("Success", "Vehicle saved successfully!");
-
-      // reset form (optional)
-      onChangelicenseplate("");
-      onChangeModel("");
-      onchangeMake("");
-      setColor("#000");
-
+      const response = await axios.get(`${API_BASE_URL}/get_vehicle/${userData.email}`);
+      setVehicles(response.data);
+      setFilteredVehicles(response.data); // initially show all
     } catch (error) {
-      console.error("Error saving vehicle:", error.response?.data || error.message);
-      Alert.alert("Error", error.response?.data?.detail || "Something went wrong!");
+      console.error("Error fetching user data or vehicles:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Refresh data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+    }, [])
+  );
+
+  // Filter vehicles based on search
+  useEffect(() => {
+    if (searchText === "") {
+      setFilteredVehicles(vehicles);
+    } else {
+      const filtered = vehicles.filter(vehicle =>
+        vehicle.model.toLowerCase().includes(searchText.toLowerCase()) ||
+        vehicle.licenseplate.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredVehicles(filtered);
+    }
+  }, [searchText, vehicles]);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.maincontainer}>
-        {/* 👇 Wrap with KeyboardAvoidingView */}
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={80} // adjust if header overlaps
+    <SafeAreaView style={styles.maincontainer}>
+      {/* Header */}
+      <View style={styles.imagecontainer}>
+        <Headersvg style={styles.image} />
+        <Text style={styles.title}>Add or Manage Vehicles</Text>
+      </View>
+
+      {/* Search Bar */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search by model or license..."
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+      </View>
+      <Text style={styles.secontext}>Added Vehicles</Text>
+      {/* Vehicle List */}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={80}
+      >
+        <FlatList
+          data={filteredVehicles}
+          keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+          renderItem={({ item }) => {
+            let vehicleIcon = CarIconIcon; // default icon
+            if (item.model.toLowerCase().includes("jeep")) {
+              vehicleIcon = JeepIconIcon;
+            }
+
+            return (
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/(components)/caredit",
+                    params: { id: item.id },
+                  })
+                }
+              >
+                <View style={styles.vehicleCard}>
+                  <View style={styles.caritems}>
+                    <Image source={vehicleIcon} style={styles.addIcon} />
+                    <View style={styles.cartext}>
+                      <Text style={styles.normaltextbold}>{item.model}</Text>
+                      <Text style={styles.normaltext}>{item.licenseplate}</Text>
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 120, marginTop: 60 }}
+          showsVerticalScrollIndicator={false}
+        />
+
+        {/* Add Vehicle Button */}
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => router.push("/(components)/addnewcar")}
         >
-          <ScrollView contentContainerStyle={styles.scrollContent}>
-            <View style={styles.imagecontainer}>
-              <Headersvg style={styles.image} />
-
-              {/* Overlay title text */}
-              <Text style={styles.title}>Vehicle Management</Text>
-            </View>
-            <View style={styles.carimage}>
-              <Text style={styles.title}>Add Vehicle</Text>
-              <Car width={250} height={200} fill={color} />
-            </View>
-            <View style={styles.form}>
-
-              <Text style={styles.lable}>Email</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                editable={false}
-              />
-
-              <Text style={styles.lable}> License Plate</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangelicenseplate}
-                placeholder=" License Plate"
-                value={licenseplate}
-              />
-
-              <Text style={styles.lable}>Model</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangeModel}
-                placeholder="Car Model"
-                value={model}
-              />
-
-              <Text style={styles.lable}>Colour</Text>
-              <View style={styles.colorInputContainer}>
-                {/* Color preview box */}
-                <View style={[styles.colorBox, { backgroundColor: color }]} />
-
-                {/* Input field */}
-                <TextInput
-                  style={styles.colorInput}
-                  placeholder="Enter a color (e.g. #ff0000)"
-                  value={color}
-                  onChangeText={setColor}
-                />
-              </View>
-
-              <Text style={styles.lable}>Country</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={onchangeMake}
-                placeholder="Made In .. "
-                value={make}
-              />
-
-              <View style={styles.centeraliment}>
-                <TouchableOpacity style={styles.submitbtn} onPress={handleSubmit}>
-                  <Text style={styles.btntext}>Save My Car</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </SafeAreaProvider>
+          <Image source={AddVechiclesIcon} style={styles.addIcon} />
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -146,79 +139,82 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
   },
   imagecontainer: {
+    width: "100%",
+    height: 150,
+    backgroundColor: "#FFFD78",
     justifyContent: "center",
     alignItems: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 5,
+    elevation: 5,
   },
   image: {
     width: "100%",
     height: 150,
-    resizeMode: "contain",
+    resizeMode: "cover",
   },
   title: {
     position: "absolute",
-    color: "#000",   // change to contrast with your svg background
-    fontSize: 25,
+    color: "#000",
+    fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
-    marginTop: -85,
   },
-  carimage: {
-    alignItems: 'center',
-  },
-  form: {
-    padding: 10,
-  },
-  lable: {
-    fontSize: 20,
-  },
-  input: {
-    height: 60,
-    marginVertical: 10,
-    borderColor: '#000',
-    borderWidth: 2,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    fontSize: 20,
-  },
-  centeraliment: {
-    alignItems: 'center',
-  },
-  submitbtn: {
-    backgroundColor: '#FFFC35',
-    borderWidth: 0,
-    borderColor: '#000',
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
-    width: '80%',
-  },
-  btntext: {
-    fontSize: 22,
-    fontWeight: 'bold'
-  },
-  colorInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderColor: "#000",
-    borderWidth: 2,
-    borderRadius: 8,
-    marginVertical: 10,
-    paddingHorizontal: 5,
-  },
-
-  colorBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 6,
-    marginRight: 10,
+  container: { flex: 1, padding: 16, backgroundColor: '#FFFD78' },
+  vehicleCard: {
+    padding: 12,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#FFFD78',
+    borderRadius: 40,
+    marginBottom: 12,
+    backgroundColor: "#FFFD78",
   },
-
-  colorInput: {
-    flex: 1,
-    height: 50,
-    fontSize: 18,
+  addButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    zIndex: 10,
   },
+  addIcon: {
+    width: 60,
+    height: 60,
+  },
+  caritems: {
+    flexDirection: 'row',
+    padding: 5,
+    alignItems: 'center',
+    gap: 25,
+  },
+  cartext: {
+    flexDirection: 'column',
+  },
+  normaltext: {
+    fontSize: 20,
+  },
+  normaltextbold: {
+    fontSize: 25,
+    fontWeight: 'bold',
+  },
+  searchContainer: {
+    marginTop: 150,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  searchInput: {
+    height: 55,
+    backgroundColor: "#FFFEC7",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    fontSize: 19,
+    marginTop:25,
+  },
+  secontext: {
+    fontSize: 20,
+    marginLeft: 15,
+    marginTop:25,
+    
+  }
 });

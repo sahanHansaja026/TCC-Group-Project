@@ -36,3 +36,20 @@ def get_vehicle(email: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No vehicles found for this user")
     
     return vehicles
+
+@router.get("/get_vehicle_by_id/{id}", response_model=schemas.VechicalResponse)
+def get_vehicle_by_id(id: int, db: Session = Depends(get_db)):
+    vehicle = db.query(models.Vechical).filter(models.Vechical.id == id).first()
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+    return vehicle
+
+@router.delete("/delete_vehicle/{id}")
+def delete_vehicle(id: int, db: Session = Depends(get_db)):
+    vehicle = db.query(models.Vechical).filter(models.Vechical.id == id).first()
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+
+    db.delete(vehicle)
+    db.commit()
+    return {"message": "Vehicle deleted successfully"}

@@ -1,13 +1,12 @@
-import { SafeAreaView, StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity, Image } from 'react-native'
+import { SafeAreaView, KeyboardAvoidingView, Platform, StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity, Image } from 'react-native'
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import React from 'react';
 import { Link, router } from 'expo-router';
 import axios from 'axios';
 import API_BASE_URL from '../../config/ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import FrontVector from '../../assets/images/login-front-vector.svg';
-import RearVector from '../../assets/images/login-rear-vector.svg';
 import GoogleIcon from '../../assets/images/google.png';
+import Logico from "../../assets/images/applogicon.png";
 import XIcon from '../../assets/images/xicon.png';
 import FacebookIcon from '../../assets/images/facebook.png';
 
@@ -38,53 +37,63 @@ export default function Login() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <FrontVector style={styles.image} />
-        <View style={styles.header}>
-          <Text style={styles.title}>Sign In Your Account</Text>
-        </View>
-        <ScrollView contentContainerStyle={styles.scrollView}
-          keyboardShouldPersistTaps="handled">
-          <Text style={styles.lable}>Email</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeEmail}
-            placeholder="Email"
-            value={email}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <Text style={styles.lable}>Password</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangePassword}
-            value={password}
-            placeholder="Password"
-            secureTextEntry={true}
-          />
-          <View style={styles.centeraliment}>
-            <TouchableOpacity style={styles.submitbtn} onPress={handleSubmit}>
-              <Text style={styles.btntext}>Login</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.centeraliment}>
-            <Text style={styles.options}>or sign in with</Text>
-          </View>
-          <View style={styles.iconview}>
-            <Image source={XIcon} style={styles.icon} />
-            <Image source={FacebookIcon} style={styles.icon} />
-            <Image source={GoogleIcon} style={styles.icon} />
-          </View>
-          <View style={styles.navigation}>
-            <Link href="/signup">
-              <Text style={styles.linktext}>Create New Account</Text>
-            </Link>
-          </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+              <Image source={Logico} style={styles.apphedericon} />
+              <Text style={styles.title}>Sign In Your Account</Text>
+            </View>
+            <ScrollView contentContainerStyle={styles.scrollView}
+              keyboardShouldPersistTaps="handled">
+              <Text style={styles.lable}>Email</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangeEmail}
+                placeholder="ex: example@gemail.com"
+                value={email}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              <Text style={styles.lable}>Password</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangePassword}
+                value={password}
+                placeholder="**************"
+                secureTextEntry={true}
+              />
+              <View style={styles.centeraliment}>
+                <TouchableOpacity style={styles.submitbtn} onPress={handleSubmit}>
+                  <Text style={styles.btntext}>Login</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.centeraliment}>
+                <Text style={styles.options}>or sign in with</Text>
+              </View>
+              <View style={styles.iconview}>
+                <Image source={XIcon} style={styles.icon} />
+                <Image source={FacebookIcon} style={styles.icon} />
+                <Image source={GoogleIcon} style={styles.icon} />
+              </View>
+              <View style={styles.navigation}>
+                <Link href="/signup">
+                  <Text style={styles.linktext}>Don’t have an account? </Text>
+                </Link>
+              </View>
+            </ScrollView>
+            <View style={styles.bottomcontainer}>
+            </View>
+          </SafeAreaView>
         </ScrollView>
-        <View style={styles.bottomcontainer}>
-          <RearVector style={styles.image} />
-        </View>
-      </SafeAreaView>
+      </KeyboardAvoidingView>
     </SafeAreaProvider>
   );
 }
@@ -123,7 +132,8 @@ const styles = StyleSheet.create({
     height: 60,
     marginVertical: 10,
     borderColor: '#000',
-    borderWidth: 2,
+    backgroundColor: "#C1C1C1",
+    borderWidth: 0,
     borderRadius: 8,
     paddingHorizontal: 10,
     fontSize: 20,
@@ -158,7 +168,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   navigation: {
-    marginTop: -50,
+    marginTop: 0,
     justifyContent: 'center',
     flex: 1,
     alignItems: 'center',
@@ -172,5 +182,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: "flex-end",
     alignItems: "center",
+  },
+  apphedericon: {
+    width: 100,
+    height: 100,
+    marginTop: 60,
   }
 })

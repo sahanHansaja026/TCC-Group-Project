@@ -50,14 +50,56 @@ def get_ongoing_bookings(driver_id: int, db: Session = Depends(get_db)):
 @router.get("/bookings/{driver_id}/completed", response_model=List[schemas.BookingResponse])
 def get_completed_bookings(driver_id: int, db: Session = Depends(get_db)):
     now = datetime.now()
-    bookings = db.query(models.Bokking).filter(
-        models.Bokking.DriverID == driver_id,
-        models.Bokking.status == "Occupied",
-        models.Bokking.date <= now.date()
-    ).all()
 
-    completed_bookings = [b for b in bookings if datetime.combine(b.date, b.EndTime) < now]
-    
-    # Always return a list, even if empty
+    # Fetch all bookings for this driver
+    bookings = db.query(models.Bokking).filter(
+        models.Bokking.DriverID == driver_id
+    ).all()
+    print("ALL BOOKINGS FOR DRIVER:", bookings)
+
+    completed_bookings = []
+
+    for b in bookings:
+        try:
+            # Handle EndTime as string "HH:MM:SS" or "HH:MM"
+            if isinstance(b.EndTime, str):
+                try:
+                    end_time = datetime.strptime(b.EndTime, "%H:%M:%S").time()
+                except ValueError:
+                    end_time = datetime.strptime(b.EndTime, "%H:%M").time()
+            else:
+                end_time = b.EndTime
+
+            # Check if booking ended in the past
+            booking_end = datetime.combine(b.date, end_time)
+            if booking_end < now:
+                completed_bookings.append(b)
+
+        except Exception as e:
+            print(f"Error processing booking {b.id}: {e}")
+
+    print("COMPLETED BOOKINGS:", completed_bookings)
     return completed_bookings
+
+# -------------------- All Bookings --------------------
+@router.get("/bookings/{driver_id}/all", response_model=List[schemas.BookingResponse])
+def get_all_bookings(driver_id: int, db: Session = Depends(get_db)):
+    """
+    Fetch all bookings for a given driver (user) by ID.
+    Returns all bookings regardless of status or date.
+    """
+    try:
+        bookings = db.query(models.Bokking).filter(
+            models.Bokking.DriverID == driver_id
+        ).order_by(models.Bokking.date.desc(), models.Bokking.StartTime.desc()).all()
+
+        print(f"ALL BOOKINGS FOR DRIVER {driver_id}:", bookings)
+
+        return bookings
+
+    except Exception as e:
+        print(f"Error fetching all bookings for driver {driver_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch bookings")
+
+
 

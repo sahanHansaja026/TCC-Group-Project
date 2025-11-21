@@ -83,15 +83,46 @@ export default function Home() {
                 <Image source={Bell} style={styles.bell} />
               </View>
             </View>
-            <Text style={styles.welcome}>
-              Hello {user?.username ?? 'Guest'}{'\n'}
-              {getGreeting()}!
-            </Text>
+            <View style={styles.homeimagecontainer}>
+              <Text style={styles.welcome}>
+                Hello {user?.username ?? 'Guest'}{'\n'}
+                {getGreeting()}!
+              </Text>
+              <Image source={HomeImage} style={styles.homeimage} />
+            </View>
+
           </View>
-          <View style={styles.yellowcontainer}>
-            <Image source={HomeImage} style={styles.homeimage} />
-          </View>
+
+
+
           <View style={styles.iconcontainer}>
+            <View style={styles.slideshow}>
+              <FlatList
+                ref={flatListRef}
+                data={ads}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <View style={styles.slide}>
+                    <Image source={item.image} style={styles.image} />
+                    <Text style={styles.text}>{item.text}</Text>
+                  </View>
+                )}
+                keyExtractor={(item) => item.id}
+              />
+
+              {/* Dots Indicator */}
+              <View style={styles.dotsContainer}>
+                {ads.map((_, i) => (
+                  <View
+                    key={i}
+                    style={[styles.dot, index === i ? styles.activeDot : null]}
+                  />
+                ))}
+              </View>
+            </View>
+            <View style={styles.space}></View>
             <View style={styles.iconrow}>
               <View style={styles.icon}>
                 <Image source={Aiicon} style={styles.iconimages} />
@@ -116,32 +147,6 @@ export default function Home() {
             </View>
 
           </View>
-          <View style={styles.slideshow}>
-            <FlatList
-              ref={flatListRef}
-              data={ads}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <View style={styles.slide}>
-                  <Image source={item.image} style={styles.image} />
-                  <Text style={styles.text}>{item.text}</Text>
-                </View>
-              )}
-              keyExtractor={(item) => item.id}
-            />
-
-            {/* Dots Indicator */}
-            <View style={styles.dotsContainer}>
-              {ads.map((_, i) => (
-                <View
-                  key={i}
-                  style={[styles.dot, index === i ? styles.activeDot : null]}
-                />
-              ))}
-            </View>
-          </View>
         </SafeAreaView>
       </ScrollView>
     </SafeAreaProvider>
@@ -151,12 +156,12 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFD78",
   },
   maincantainer: {
     width: "100%",
     height: 265,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFD78",
 
   },
   rowcontainer: {
@@ -221,26 +226,35 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
   },
   welcome: {
-    fontSize: 28,
+    fontSize: 24,
     color: '#000',
     marginLeft: 30,
     fontWeight: 'bold',
+    marginTop:35,
   },
   yellowcontainer: {
     width: "100%",
     height: 265,
-    backgroundColor: "#FFFC35",
-    justifyContent: 'center',  /* Center horizontally */
     alignItems: 'flex-end',  /* Push content to bottom */
     marginBottom: 20,
   },
+  homeimagecontainer: {
+    flexDirection: 'row',
+    height:150,
+  },
   homeimage: {
-    width: "100%",
-    height: 280,
+    width: 280,
+    height: 120,
+    marginTop:-25,
   },
   iconcontainer: {
     flexDirection: 'column',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    borderTopEndRadius: 85,
+    borderTopStartRadius:85,
+  },
+  space: {
+    marginTop:35,
   },
   iconrow: {
     flexDirection: 'row',
