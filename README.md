@@ -52,12 +52,18 @@ This README explains how to set up and run the project locally.
 cd backend
 ```
 
-
+### 2. Create virtual environment
 
 ```bash
 python -m venv venv
 ```
 
+### 3. Activate virtual environment
+
+**Windows:**
+
+```bash
+venv\Scripts\activate
 ```
 
 **Mac/Linux:**
