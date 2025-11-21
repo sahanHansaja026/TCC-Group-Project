@@ -1,6 +1,6 @@
 import email
 from enum import unique
-from sqlalchemy import Column,Numeric,Integer,String,LargeBinary,Time,Date # type: ignore
+from sqlalchemy import Column,Numeric,Integer,String,LargeBinary,Time,Date,DECIMAL # type: ignore
 from database import Base
 
 class User(Base):
@@ -67,3 +67,12 @@ class CardPayment(Base):
     PaymentMethod = Column(String, nullable=False)
     SessionID = Column(Integer, nullable=False)
     SubscriptionID = Column(Integer, nullable=False)
+
+class ParkingLot(Base):
+    __tablename__ = "parking_lot"
+
+    parkinglotid = Column(Integer, primary_key=True, index=True)
+    lotname = Column(String(100))
+    location = Column(String(255))
+    latitude = Column(DECIMAL(9, 6))
+    longitude = Column(DECIMAL(9, 6))

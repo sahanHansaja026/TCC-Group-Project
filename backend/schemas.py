@@ -112,3 +112,21 @@ class CardPaymentResponse(CardPaymentBase):
 
     class Config:
         orm_mode = True  
+
+# Base schema
+class ParkingLotBase(BaseModel):
+    lotname: str
+    location: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+
+# Create schema (for POST requests)
+class ParkingLotCreate(ParkingLotBase):
+    pass
+
+# Response schema (for GET requests)
+class ParkingLotResponse(ParkingLotBase):
+    parkinglotid: int
+
+    class Config:
+        orm_mode = True

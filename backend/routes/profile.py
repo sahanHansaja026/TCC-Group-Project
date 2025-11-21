@@ -65,3 +65,54 @@ def get_profile_by_email(email: str, db: Session = Depends(get_db)):
         "contact": "",
         "profileimage": None,
     }
+
+@router.post("/profile/update", response_model=schemas.ProfileResponse)
+async def update_profile(
+    email: str = Form(...),
+    name: str = Form(...),
+    contact: str = Form(...),
+    profileimage: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
+    # Find existing user profile
+    profile = db.query(models.Profile).filter(models.Profile.email == email).first()
+
+    # If no profile exists → create one
+    if not profile:
+        profile = models.Profile(email=email)
+
+    # Update fields
+    profile.name = name
+    profile.contact = contact
+
+    # If a new image is uploaded
+    if profileimage:
+        profile.profileimage = await profileimage.read()
+
+    db.add(profile)
+    db.commit()
+    db.refresh(profile)
+
+    return {
+        "id": profile.id,
+        "name": profile.name,
+        "email": profile.email,
+        "contact": profile.contact,
+        "profileimage": (
+            base64.b64encode(profile.profileimage).decode("utf-8")
+            if profile.profileimage else None
+        ),
+    }
+
+@router.delete("/profile/{profile_id}")
+def delete_profile(profile_id: int, db: Session = Depends(get_db)):
+    profile = db.query(models.Profile).filter(models.Profile.id == profile_id).first()
+
+    if not profile:
+        return {"message": "Profile already removed or not found."}
+
+    # delete profile record
+    db.delete(profile)
+    db.commit()
+
+    return {"message": "Profile deleted successfully."}

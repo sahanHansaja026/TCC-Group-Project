@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View, TextInput, Text, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import Car from "../../assets/cars/car.svg";
-import Headersvg from "../../assets/cars/modernhedder.svg";
-import authService from "../services/authService";
-import API_BASE_URL from '../../config/ipconfig';
 import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { Alert, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import API_BASE_URL from '../../config/ipconfig';
+import authService from "../services/authService";
 
 
 export default function CarAdd() {
@@ -73,55 +71,50 @@ export default function CarAdd() {
                     <ScrollView contentContainerStyle={styles.scrollContent}>
                         <View style={styles.carimage}>
                             <Text style={styles.title}>Add Vehicle</Text>
-                            <Car width={250} height={200} fill={color} />
                         </View>
                         <View style={styles.form}>
-
-                            <Text style={styles.lable}>Email</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={email}
-                                editable={false}
-                            />
-
-                            <Text style={styles.lable}> License Plate</Text>
-                            <TextInput
-                                style={styles.input}
-                                onChangeText={onChangelicenseplate}
-                                placeholder=" License Plate"
-                                value={licenseplate}
-                            />
-
-                            <Text style={styles.lable}>Model</Text>
-                            <TextInput
-                                style={styles.input}
-                                onChangeText={onChangeModel}
-                                placeholder="Car Model"
-                                value={model}
-                            />
-
-                            <Text style={styles.lable}>Colour</Text>
-                            <View style={styles.colorInputContainer}>
-                                {/* Color preview box */}
-                                <View style={[styles.colorBox, { backgroundColor: color }]} />
-
-                                {/* Input field */}
+                            <View style={styles.fieldbackground}>
+                                <Text style={styles.lable}> License Plate</Text>
                                 <TextInput
-                                    style={styles.colorInput}
-                                    placeholder="Enter a color (e.g. #ff0000)"
-                                    value={color}
-                                    onChangeText={setColor}
+                                    style={styles.input}
+                                    onChangeText={onChangelicenseplate}
+                                    placeholder=" License Plate"
+                                    value={licenseplate}
                                 />
                             </View>
+                            <View style={styles.fieldbackground}>
+                                <Text style={styles.lable}>Model</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    onChangeText={onChangeModel}
+                                    placeholder="Car Model"
+                                    value={model}
+                                />
+                            </View>
+                            <View style={styles.fieldbackground}>
+                                <Text style={styles.lable}>Colour</Text>
+                                <View style={styles.colorInputContainer}>
+                                    {/* Color preview box */}
+                                    <View style={[styles.colorBox, { backgroundColor: color }]} />
 
-                            <Text style={styles.lable}>Country</Text>
-                            <TextInput
-                                style={styles.input}
-                                onChangeText={onchangeMake}
-                                placeholder="Made In .. "
-                                value={make}
-                            />
-
+                                    {/* Input field */}
+                                    <TextInput
+                                        style={styles.colorInput}
+                                        placeholder="Enter a color (e.g. #ff0000)"
+                                        value={color}
+                                        onChangeText={setColor}
+                                    />
+                                </View>
+                            </View>
+                            <View style={styles.fieldbackground}>
+                                <Text style={styles.lable}>Country</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    onChangeText={onchangeMake}
+                                    placeholder="Made In .. "
+                                    value={make}
+                                />
+                            </View>
                             <View style={styles.centeraliment}>
                                 <TouchableOpacity style={styles.submitbtn} onPress={handleSubmit}>
                                     <Text style={styles.btntext}>Save My Car</Text>
@@ -162,18 +155,27 @@ const styles = StyleSheet.create({
     },
     form: {
         padding: 10,
+        gap:10,
+    },
+    fieldbackground: {
+        backgroundColor: '#FFFD78',
+        padding: 10,
+        borderWidth: 0,
+        borderRadius: 18,
     },
     lable: {
         fontSize: 20,
+        fontWeight: 800,
     },
     input: {
         height: 60,
         marginVertical: 10,
         borderColor: '#000',
-        borderWidth: 2,
+        borderWidth: 0,
         borderRadius: 8,
         paddingHorizontal: 10,
         fontSize: 20,
+        backgroundColor: '#fff'
     },
     centeraliment: {
         alignItems: 'center',
@@ -195,11 +197,12 @@ const styles = StyleSheet.create({
     colorInputContainer: {
         flexDirection: "row",
         alignItems: "center",
-        borderColor: "#000",
+        borderColor: "#fff",
         borderWidth: 2,
         borderRadius: 8,
         marginVertical: 10,
         paddingHorizontal: 5,
+        backgroundColor:'#fff'
     },
 
     colorBox: {

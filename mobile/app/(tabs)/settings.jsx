@@ -87,6 +87,12 @@ export default function Settings() {
               <ArrowIcon style={styles.image} />
             </TouchableOpacity>
 
+            <TouchableOpacity style={styles.yellowbar} activeOpacity={0.7} onPress={() => router.push("/(components)/profile")} >
+              <View style={styles.paddingofyellobar}>
+                <Text style={styles.yellowbartitles}>My Profile</Text>
+              </View>
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.yellowbar} activeOpacity={0.7} onPress={() => router.push("/(components)/billing")} >
               <View style={styles.paddingofyellobar}>
                 <Text style={styles.yellowbartitles}>Billing Information</Text>

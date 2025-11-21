@@ -8,20 +8,18 @@ import CompletedScreen from "../screens/CompletedScreen";
 import CancelledScreen from "../screens/CancelledScreen";
 
 export default function BookingTabs() {
-  const [activeTab, setActiveTab] = useState("Completed");
+  const [activeTab, setActiveTab] = useState("Ongoing");
 
   const tabs = ["Ongoing", "Completed", "Cancelled"];
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.maincontainer}>
+      <SafeAreaView>
         <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.imagecontainer}>
+            <Text style={styles.title}>Your Reservations</Text>
+          </View>
           <View style={styles.container}>
-            <View style={styles.imagecontainer}>
-              <Headersvg style={styles.image} />
-              <Text style={styles.title}>Your Reservations</Text>
-            </View>
-
             <View style={styles.tabContainer}>
               {tabs.map((tab) => (
                 <TouchableOpacity
@@ -42,38 +40,37 @@ export default function BookingTabs() {
               {activeTab === "Cancelled" && <CancelledScreen />}
             </View>
           </View>
-        </ScrollView>
+          </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  maincontainer: {
-    flex: 1,
-    backgroundColor: "#FFF"
-  },
+
   imagecontainer: {
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    backgroundColor: '#FFFD78',
+    width: '100%',
+    height:205,
   },
-  image: {
-    width: "100%",
-    height: 150,
-    resizeMode: "contain"
-  },
+
   title: {
     position: "absolute",
     color: "#000",
     fontSize: 25,
     fontWeight: "bold",
     textAlign: "center",
-    marginTop: -85,
+    marginTop: 0,
   },
   container: {
     backgroundColor: "#fff",
-    borderRadius: 20,
-    paddingVertical: 10
+    paddingVertical: 0,
+    borderTopEndRadius: 85,
+    borderTopStartRadius: 85,
+    marginTop:-65
+
   },
   tabContainer: {
     flexDirection: "row",
@@ -83,7 +80,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginVertical: 10,
     padding: 5,
-    marginTop: -80,
+    marginTop: 50,
   },
   tab: {
     flex: 1,
@@ -107,6 +104,6 @@ const styles = StyleSheet.create({
   },
   content: {
     marginTop: 20,
-    alignItems: "center"
+    alignItems: "center",
   },
 });
